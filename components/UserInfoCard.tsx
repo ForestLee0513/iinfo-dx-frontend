@@ -3,10 +3,11 @@
 import { isAxiosError } from "axios";
 import Link from "next/link";
 
-import { useMyInfoQuery } from "@/api/auth/requests";
+import { useLogoutMutation, useMyInfoQuery } from "@/api/auth/requests";
 
 export function UserInfoCard() {
   const myInfo = useMyInfoQuery();
+  const logout = useLogoutMutation();
 
   if (myInfo.isPending) {
     return (
@@ -50,6 +51,13 @@ export function UserInfoCard() {
         <dt className="text-gray-500">ID</dt>
         <dd className="break-all">{myInfo.data.id}</dd>
       </dl>
+      <button
+        onClick={() => logout.mutate()}
+        disabled={logout.isPending}
+        className="rounded-md bg-gray-900 py-2 text-center font-medium text-white disabled:opacity-50"
+      >
+        {logout.isPending ? "로그아웃 중..." : "로그아웃"}
+      </button>
     </section>
   );
 }
