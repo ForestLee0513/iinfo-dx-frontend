@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query";
 
 import { api, setAccessToken } from "@/lib/axios";
-import { AUTH_BASE } from "./constants";
+import { AUTH_BASE, AUTH_OAUTH_PROVIDER_PROMPT } from "./constants";
 import type {
   AuthLoginRequest,
   AuthLoginResponse,
@@ -73,8 +73,12 @@ XHR이 아닌 전체 페이지 리다이렉트로 진입해야 하며,
 export function getOAuthLoginUrl({
   provider,
   redirect,
+  prompt,
 }: AuthOAuthLoginRequest) {
   const query = new URLSearchParams({ redirect });
+  // prompt 미지정 시 공급자별 기본값 적용
+  const promptValue = prompt ?? AUTH_OAUTH_PROVIDER_PROMPT[provider];
+  if (promptValue) query.set("prompt", promptValue);
   return `${api.defaults.baseURL}${AUTH_BASE}/login/${provider}?${query}`;
 }
 
@@ -119,4 +123,25 @@ export const myInfoQueryOptions = queryOptions({
 
 export function useMyInfoQuery() {
   return useQuery(myInfoQueryOptions);
+}
+
+/*
+POST /api/v1/web/auth/logout
+로그아웃 - Logout
+성공 시 서버가 세션 쿠키를 제거한다 (withCredentials 필수)
+*/
+export async function logout() {
+  await api.post(`${AUTH_BASE}/logout`);
+  setAccessToken(null);
+}
+
+export function useLogoutMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: authKeys.all });
+    },
+  });
 }

@@ -1,10 +1,16 @@
-import { AUTH_MEMBER_ROLE, AUTH_OAUTH_PROVIDERS } from "./constants";
+import {
+  AUTH_MEMBER_ROLE,
+  AUTH_OAUTH_PROMPT,
+  AUTH_OAUTH_PROVIDERS,
+} from "./constants";
 
 /*
 상수값 - constants
 */
 export type AuthMemberRole = keyof typeof AUTH_MEMBER_ROLE;
 export type AuthOAuthProvider = (typeof AUTH_OAUTH_PROVIDERS)[number];
+export type AuthOAuthPrompt =
+  (typeof AUTH_OAUTH_PROMPT)[keyof typeof AUTH_OAUTH_PROMPT];
 
 /*
 GET /api/v1/web/auth/login/{provider}
@@ -13,6 +19,7 @@ OAuth 로그인 - Oauth Login
 export interface AuthOAuthLoginRequest {
   provider: AuthOAuthProvider; // ex) "google", "github", "kakao"
   redirect: string; // ex) "https://example.com/oauth/callback"
+  prompt?: AuthOAuthPrompt; // ex) "consent", "select_account" — 미지정 시 공급자 기본 동작
 }
 
 /*
