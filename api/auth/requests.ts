@@ -1,0 +1,122 @@
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+import { api, setAccessToken } from "@/lib/axios";
+import { AUTH_BASE } from "./constants";
+import type {
+  AuthLoginRequest,
+  AuthLoginResponse,
+  AuthMyInfoResponse,
+  AuthOAuthLoginRequest,
+  AuthRefreshResponse,
+} from "./types";
+
+/*
+쿼리 키 - Query Keys
+*/
+export const authKeys = {
+  all: ["auth"] as const,
+  me: () => [...authKeys.all, "me"] as const,
+};
+
+/*
+POST /api/v1/web/auth/login
+이메일 로그인 - Email Login
+성공 시 서버가 세션 쿠키를 설정한다 (withCredentials 필수)
+*/
+export async function loginWithEmail(body: AuthLoginRequest) {
+  const { data } = await api.post<AuthLoginResponse>(
+    `${AUTH_BASE}/login`,
+    body,
+  );
+  setAccessToken(data.session.access_token);
+  return data;
+}
+
+/*
+로그인 응답의 user로 me 쿼리 캐시를 바로 채워서
+로그인 직후 /me를 다시 요청하지 않아도 되게 한다
+*/
+function seedMyInfo(
+  queryClient: ReturnType<typeof useQueryClient>,
+  { user }: AuthLoginResponse,
+) {
+  queryClient.setQueryData<AuthMyInfoResponse>(authKeys.me(), {
+    id: user.id,
+    email: user.email ?? "",
+    provider: user.provider ?? "email",
+    app_role: user.app_role,
+  });
+}
+
+export function useEmailLoginMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: loginWithEmail,
+    onSuccess: (data) => {
+      seedMyInfo(queryClient, data);
+    },
+  });
+}
+
+/*
+GET /api/v1/web/auth/login/{provider}
+OAuth 로그인 - OAuth Login
+XHR이 아닌 전체 페이지 리다이렉트로 진입해야 하며,
+공급자 인증 완료 후 콜백(redirect)에서 세션 쿠키가 설정된다
+*/
+export function getOAuthLoginUrl({
+  provider,
+  redirect,
+}: AuthOAuthLoginRequest) {
+  const query = new URLSearchParams({ redirect });
+  return `${api.defaults.baseURL}${AUTH_BASE}/login/${provider}?${query}`;
+}
+
+export function startOAuthLogin(request: AuthOAuthLoginRequest) {
+  window.location.assign(getOAuthLoginUrl(request));
+}
+
+/*
+POST /api/v1/web/auth/refresh
+세션 갱신 (쿠키 기반, 본문 불필요) - Refresh Session
+*/
+export async function refreshSession() {
+  const { data } = await api.post<AuthRefreshResponse>(`${AUTH_BASE}/refresh`);
+  setAccessToken(data.session.access_token);
+  return data;
+}
+
+export function useRefreshSessionMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: refreshSession,
+    onSuccess: (data) => {
+      seedMyInfo(queryClient, data);
+    },
+  });
+}
+
+/*
+GET /api/v1/web/auth/me
+현재 로그인 사용자 조회 - Get Current Logged-in User
+*/
+export async function getMyInfo() {
+  const { data } = await api.get<AuthMyInfoResponse>(`${AUTH_BASE}/me`);
+  return data;
+}
+
+export const myInfoQueryOptions = queryOptions({
+  queryKey: authKeys.me(),
+  queryFn: getMyInfo,
+});
+
+export function useMyInfoQuery() {
+  return useQuery(myInfoQueryOptions);
+}
