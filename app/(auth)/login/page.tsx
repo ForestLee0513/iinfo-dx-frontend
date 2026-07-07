@@ -2,6 +2,7 @@
 
 import { isAxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import { use } from "react";
 
 import { AUTH_OAUTH_PROVIDERS } from "@/api/auth/constants";
 import { startOAuthLogin, useEmailLoginMutation } from "@/api/auth/requests";
@@ -17,9 +18,22 @@ function getErrorMessage(error: unknown) {
   return "로그인에 실패했습니다.";
 }
 
-export default function LoginPage() {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string | string[] }>;
+}) {
   const router = useRouter();
   const emailLogin = useEmailLoginMutation();
+
+  // OAuth 실패 시 백엔드가 ?error=<한글 메시지>를 붙여 홈으로 돌려보내고,
+  // app/page.tsx가 이 페이지로 전달한다 — 메시지를 그대로 표시한다
+  const { error } = use(searchParams);
+  const rawOAuthError = Array.isArray(error) ? error[0] : error;
+  const oauthErrorMessage =
+    rawOAuthError !== undefined
+      ? rawOAuthError.trim() || "소셜 로그인에 실패했습니다. 다시 시도해 주세요."
+      : undefined;
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -93,6 +107,11 @@ export default function LoginPage() {
       </div>
 
       <div className="flex flex-col gap-2">
+        {oauthErrorMessage && emailLogin.isIdle && (
+          <p role="alert" className="text-sm text-red-600">
+            {oauthErrorMessage}
+          </p>
+        )}
         {AUTH_OAUTH_PROVIDERS.map((provider) => (
           <button
             key={provider}
