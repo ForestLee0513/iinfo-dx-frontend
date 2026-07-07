@@ -2,7 +2,7 @@
 
 import { isAxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 
 import { AUTH_OAUTH_PROVIDERS } from "@/api/auth/constants";
 import { startOAuthLogin, useEmailLoginMutation } from "@/api/auth/requests";
@@ -27,13 +27,22 @@ export default function LoginPage({
   const emailLogin = useEmailLoginMutation();
 
   // OAuth 실패 시 백엔드가 ?error=<한글 메시지>를 붙여 홈으로 돌려보내고,
-  // app/page.tsx가 이 페이지로 전달한다 — 메시지를 그대로 표시한다
+  // app/page.tsx가 이 페이지로 전달한다 — 최초 값만 상태로 잡아 그대로 표시한다
   const { error } = use(searchParams);
   const rawOAuthError = Array.isArray(error) ? error[0] : error;
-  const oauthErrorMessage =
+  const [oauthErrorMessage] = useState(() =>
     rawOAuthError !== undefined
       ? rawOAuthError.trim() || "소셜 로그인에 실패했습니다. 다시 시도해 주세요."
-      : undefined;
+      : undefined,
+  );
+
+  // 새로고침 시 재표시되지 않도록 URL에서 error 파라미터만 제거 (재렌더링 없이)
+  useEffect(() => {
+    if (!oauthErrorMessage) return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("error");
+    window.history.replaceState(null, "", url);
+  }, [oauthErrorMessage]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
