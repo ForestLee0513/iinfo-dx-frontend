@@ -17,9 +17,11 @@ export function UserInfoCard() {
     );
   }
 
-  if (myInfo.isError) {
+  // data === null: 부트스트랩이 미로그인으로 확정한 상태 (401 에러 없이)
+  if (myInfo.isError || myInfo.data === null) {
     const isUnauthorized =
-      isAxiosError(myInfo.error) && myInfo.error.response?.status === 401;
+      myInfo.data === null ||
+      (isAxiosError(myInfo.error) && myInfo.error.response?.status === 401);
 
     return (
       <section className="flex w-full max-w-sm flex-col gap-3 rounded-lg border border-gray-200 p-4 text-sm">
