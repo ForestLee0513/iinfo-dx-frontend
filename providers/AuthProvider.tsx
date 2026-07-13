@@ -3,7 +3,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 
-import { authKeys, refreshSession, seedMyInfo } from "@/api/auth/requests";
+import { refreshSession } from "@/api/auth/requests";
+import { authKeys, seedMyInfo } from "@/api/auth/queries";
 import type { AuthMyInfoResponse } from "@/api/auth/types";
 import { getAccessToken } from "@/lib/axios";
 import { AuthReadyContext } from "@/providers/auth-ready-context";
