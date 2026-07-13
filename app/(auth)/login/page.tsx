@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 
 import { AUTH_OAUTH_PROVIDERS } from "@/api/auth/constants";
-import { startOAuthLogin, useEmailLoginMutation } from "@/api/auth/requests";
+import { startOAuthLogin } from "@/api/auth/requests";
+import { useEmailLoginMutation } from "@/api/auth/queries";
 import type { AuthOAuthProvider } from "@/api/auth/types";
 
 function getErrorMessage(error: unknown) {

@@ -33,11 +33,30 @@ Path alias: `@/*` → repo root. Styling is Tailwind CSS v4 (PostCSS plugin, no 
 
 ### API layer pattern (`api/<domain>/`)
 
-Each backend domain gets three files (see `api/auth/` as the reference implementation):
+Each backend domain gets four files (see `api/auth/` as the reference implementation):
 
 - `constants.ts` — route base (e.g. `AUTH_BASE = "/api/v1/web/auth"`) and enum-like consts
 - `types.ts` — request/response interfaces, one block per endpoint with the endpoint path in a comment
-- `requests.ts` — everything TanStack Query: a `<domain>Keys` query-key factory, raw request functions, `queryOptions` exports, and `useXxxQuery`/`useXxxMutation` hooks
+- `requests.ts` — the request layer: raw `async` functions that call `api` (axios) and return response data. No TanStack Query imports.
+- `queries.ts` — the TanStack Query layer, built on top of `requests.ts`: a `<domain>Keys` query-key factory, `queryOptions` exports, cache seeders, and `useXxxQuery`/`useXxxMutation` hooks
+
+Keep the two layers separate: `queries.ts` imports request functions from `requests.ts`, never the reverse. Components import hooks from `queries.ts`; import raw functions from `requests.ts` only for non-hook flows (e.g. `startOAuthLogin`, or `refreshSession` inside the interceptor/bootstrap).
+
+### TanStack Query state management (query keys)
+
+The client cache is TanStack Query — treat it as server-state, not a client store. State is partitioned per domain by the **top-level string** of each query key, via a `<domain>Keys` factory:
+
+```ts
+export const authKeys = {
+  all: ["auth"] as const,              // namespace root for the whole domain
+  me: () => [...authKeys.all, "me"] as const,
+};
+```
+
+- **Namespacing rule:** every domain's `all` MUST start with a unique string (`["auth"]`, `["user"]`, `["post"]`, …). Never build a key by hand in a component — always go through the factory so the prefix stays consistent.
+- **Why domains don't clobber each other:** invalidate/remove match by array **prefix**, so `removeQueries({ queryKey: authKeys.all })` only touches keys starting with `["auth", …]`. Other domains' subtrees are untouched. Auth cache is only wiped by a same-prefix collision, `queryClient.clear()`, or a key-less `invalidateQueries()` — all deliberate.
+- **Derive keys from the parent:** child keys spread `authKeys.all` (`[...authKeys.all, "me"]`) so one `authKeys.all` removal cleans the entire domain in a single call (see `useLogoutMutation`).
+- Cache writes go through named seeders (`seedMyInfo`) in `queries.ts`, not scattered `setQueryData` calls in components.
 
 ### Auth & HTTP flow
 

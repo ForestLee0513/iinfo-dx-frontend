@@ -3,7 +3,7 @@
 import { isAxiosError } from "axios";
 import Link from "next/link";
 
-import { useLogoutMutation, useMyInfoQuery } from "@/api/auth/requests";
+import { useLogoutMutation, useMyInfoQuery } from "@/api/auth/queries";
 
 export function UserInfoCard() {
   const myInfo = useMyInfoQuery();
