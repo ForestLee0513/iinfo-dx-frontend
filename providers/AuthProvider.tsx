@@ -7,7 +7,7 @@ import { refreshSession } from "@/api/auth/requests";
 import { authKeys, seedMyInfo } from "@/api/auth/queries";
 import type { AuthMyInfoResponse } from "@/api/auth/types";
 import { getAccessToken } from "@/lib/axios";
-import { AuthReadyContext } from "@/providers/auth-ready-context";
+import { AuthReadyContext } from "@/providers/AuthReadyContext";
 
 /*
 랜딩 시 세션을 한 번 복원한다.
@@ -30,7 +30,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((data) => seedMyInfo(queryClient, data))
       .catch(() =>
         // refresh 실패(쿠키 없음/만료) = 미로그인 확정
-        queryClient.setQueryData<AuthMyInfoResponse | null>(authKeys.me(), null),
+        queryClient.setQueryData<AuthMyInfoResponse | null>(
+          authKeys.me(),
+          null,
+        ),
       )
       .finally(() => {
         if (active) setReady(true);
