@@ -5,13 +5,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-import { useAuthReady } from "@/providers/auth-ready-context";
-import {
-  getMyInfo,
-  loginWithEmail,
-  logout,
-  refreshSession,
-} from "./requests";
+import { useAuthReady } from "@/providers/AuthReadyContext";
+import { getMyInfo, loginWithEmail, logout, refreshSession } from "./requests";
 import type { AuthLoginResponse, AuthMyInfoResponse } from "./types";
 
 /*
