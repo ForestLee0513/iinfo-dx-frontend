@@ -1,8 +1,27 @@
 "use client";
 
 import { isAxiosError } from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
+
+import {
+  Alert,
+  AlertDescription,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+  Input,
+} from "@forestlee0513/iinfo-dx-design-system";
 
 import { AUTH_OAUTH_PROVIDERS } from "@/api/auth/constants";
 import { startOAuthLogin } from "@/api/auth/requests";
@@ -68,71 +87,78 @@ export default function LoginPage({
   }
 
   return (
-    <section className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold">로그인</h1>
+    <Card className="w-full max-w-sm">
+      <CardHeader>
+        <CardTitle className="text-xl">로그인</CardTitle>
+        <CardDescription>이메일과 비밀번호를 입력해 로그인하세요.</CardDescription>
+      </CardHeader>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <label className="flex flex-col gap-1 text-sm">
-          이메일
-          <input
-            type="email"
-            name="email"
-            required
-            autoComplete="email"
-            placeholder="you@example.com"
-            className="rounded-md border border-gray-300 px-3 py-2"
-          />
-        </label>
+      <CardContent>
+        <form onSubmit={handleSubmit}>
+          <FieldGroup>
+            {oauthErrorMessage && emailLogin.isIdle && (
+              <Alert variant="destructive">
+                <AlertDescription>{oauthErrorMessage}</AlertDescription>
+              </Alert>
+            )}
 
-        <label className="flex flex-col gap-1 text-sm">
-          비밀번호
-          <input
-            type="password"
-            name="password"
-            required
-            autoComplete="current-password"
-            className="rounded-md border border-gray-300 px-3 py-2"
-          />
-        </label>
+            <Field>
+              <FieldLabel htmlFor="email">이메일</FieldLabel>
+              <Input
+                id="email"
+                type="email"
+                name="email"
+                required
+                autoComplete="email"
+                placeholder="you@example.com"
+              />
+            </Field>
 
-        {emailLogin.isError && (
-          <p role="alert" className="text-sm text-red-600">
-            {getErrorMessage(emailLogin.error)}
-          </p>
-        )}
+            <Field>
+              <FieldLabel htmlFor="password">비밀번호</FieldLabel>
+              <Input
+                id="password"
+                type="password"
+                name="password"
+                required
+                autoComplete="current-password"
+              />
+            </Field>
 
-        <button
-          type="submit"
-          disabled={emailLogin.isPending}
-          className="mt-1 rounded-md bg-gray-900 py-2 font-medium text-white disabled:opacity-50"
-        >
-          {emailLogin.isPending ? "로그인 중..." : "이메일로 로그인"}
-        </button>
-      </form>
+            {emailLogin.isError && (
+              <FieldError errors={[{ message: getErrorMessage(emailLogin.error) }]} />
+            )}
 
-      <div className="flex items-center gap-3 text-xs text-gray-400">
-        <hr className="flex-1 border-gray-200" />
-        또는
-        <hr className="flex-1 border-gray-200" />
-      </div>
+            <Field>
+              <Button type="submit" disabled={emailLogin.isPending}>
+                {emailLogin.isPending ? "로그인 중..." : "이메일로 로그인"}
+              </Button>
+            </Field>
 
-      <div className="flex flex-col gap-2">
-        {oauthErrorMessage && emailLogin.isIdle && (
-          <p role="alert" className="text-sm text-red-600">
-            {oauthErrorMessage}
-          </p>
-        )}
-        {AUTH_OAUTH_PROVIDERS.map((provider) => (
-          <button
-            key={provider}
-            type="button"
-            onClick={() => handleOAuthLogin(provider)}
-            className="rounded-md border border-gray-300 py-2 font-medium capitalize"
-          >
-            {provider}로 계속하기
-          </button>
-        ))}
-      </div>
-    </section>
+            <FieldSeparator>또는</FieldSeparator>
+
+            {AUTH_OAUTH_PROVIDERS.map((provider) => (
+              <Field key={provider}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="capitalize"
+                  onClick={() => handleOAuthLogin(provider)}
+                >
+                  {provider}로 계속하기
+                </Button>
+              </Field>
+            ))}
+          </FieldGroup>
+        </form>
+      </CardContent>
+
+      <CardFooter className="justify-center text-sm text-muted-foreground">
+        계정이 없으신가요?{" "}
+        <Link href="/sign-up" className="ml-1 text-foreground underline underline-offset-4">
+          회원가입
+        </Link>
+      </CardFooter>
+    </Card>
   );
 }
