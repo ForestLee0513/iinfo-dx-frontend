@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { IconMenu2 } from "@tabler/icons-react";
+import { IconMenu2, IconX } from "@tabler/icons-react";
 
 import {
+  Button,
   Separator,
   Sheet,
+  SheetClose,
   SheetContent,
   SheetFooter,
   SheetHeader,
@@ -14,7 +16,9 @@ import {
   buttonVariants,
 } from "@forestlee0513/iinfo-dx-design-system";
 
+import { DesktopAuthActions } from "./parts/DesktopAuthActions";
 import { DesktopNav } from "./parts/DesktopNav";
+import { MobileAuthActions } from "./parts/MobileAuthActions";
 import { MobileNav } from "./parts/MobileNav";
 
 // shadcn 사이트 헤더 형태(로고 + 텍스트 네비 + 로그인/회원가입, 모바일은 Sheet)를 따른 전 페이지 공통 상단 바.
@@ -37,16 +41,8 @@ export function Header() {
 
         <div className="flex-1" />
 
-        <div className="hidden items-center gap-2 md:flex">
-          <Link
-            href="/login"
-            className={buttonVariants({ variant: "ghost", size: "sm" })}
-          >
-            로그인
-          </Link>
-          <Link href="/sign-up" className={buttonVariants({ size: "sm" })}>
-            회원가입
-          </Link>
+        <div className="hidden md:flex">
+          <DesktopAuthActions />
         </div>
 
         <div className="md:hidden">
@@ -57,29 +53,26 @@ export function Header() {
             >
               <IconMenu2 className="size-5" />
             </SheetTrigger>
-            <SheetContent side="left" className="flex w-72 flex-col p-0">
-              <SheetHeader className="border-b px-4 py-3">
+            <SheetContent
+              side="left"
+              showCloseButton={false}
+              className="flex w-72 flex-col p-0"
+            >
+              <SheetHeader className="flex-row items-center justify-between border-b px-4 py-3">
                 <SheetTitle className="text-base font-bold">
                   IInfo DX
                 </SheetTitle>
+                <SheetClose
+                  aria-label="메뉴 닫기"
+                  render={<Button variant="ghost" size="icon-sm" />}
+                >
+                  <IconX className="size-4" />
+                  <span className="sr-only">닫기</span>
+                </SheetClose>
               </SheetHeader>
               <MobileNav />
-              <SheetFooter className="mt-auto flex-row gap-2 border-t px-4 py-3">
-                <Link
-                  href="/login"
-                  className={buttonVariants({
-                    variant: "outline",
-                    className: "flex-1",
-                  })}
-                >
-                  로그인
-                </Link>
-                <Link
-                  href="/sign-up"
-                  className={buttonVariants({ className: "flex-1" })}
-                >
-                  회원가입
-                </Link>
+              <SheetFooter className="mt-auto border-t px-4 py-3">
+                <MobileAuthActions />
               </SheetFooter>
             </SheetContent>
           </Sheet>
