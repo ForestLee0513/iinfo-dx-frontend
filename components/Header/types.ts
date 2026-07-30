@@ -3,3 +3,7 @@ export type NavItem = {
   href: string;
   desktopOnly?: boolean;
 };
+
+export type MobileMenuContextValue = {
+  close: () => void;
+};
