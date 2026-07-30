@@ -43,3 +43,9 @@ next-env.d.ts
 .omc/
 
 .DS_Store
+
+# claude code — 개인 설정/로컬 산출물만 제외하고
+# 팀 공유 대상(.claude/settings.json, commands, agents, skills)은 커밋한다
+.claude/settings.local.json
+.claude/*.local.json
+CLAUDE.local.md
