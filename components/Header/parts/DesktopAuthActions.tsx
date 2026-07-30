@@ -17,6 +17,7 @@ import {
 } from "@forestlee0513/iinfo-dx-design-system";
 
 import { useLogoutMutation, useMyInfoQuery } from "@/api/auth/queries";
+import { PROFILE_HREF } from "../constants";
 
 export function DesktopAuthActions() {
   const myInfo = useMyInfoQuery();
@@ -56,6 +57,11 @@ export function DesktopAuthActions() {
           <DropdownMenuLabel className="font-normal">
             <span className="block max-w-48 truncate text-sm">{myInfo.data.email}</span>
           </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {/* Menu.Item의 render로 <a>를 넘겨 메뉴 항목 시맨틱을 유지한 채 링크로 이동한다(클릭 시 메뉴는 자동으로 닫힘). */}
+          <DropdownMenuItem render={<Link href={PROFILE_HREF} />}>
+            프로필
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
