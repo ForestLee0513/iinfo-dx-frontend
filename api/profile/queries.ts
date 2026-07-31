@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-import { getProfile, updateProfile } from "./requests";
+import { followUser, getProfile, unfollowUser, updateProfile } from "./requests";
 import type { ProfileResponse } from "./types";
 
 /*
@@ -62,6 +62,34 @@ export function useUpdateProfileMutation(identifier: string) {
     mutationFn: updateProfile,
     onSuccess: (data) => {
       seedProfile(queryClient, identifier, data);
+    },
+  });
+}
+
+/*
+POST/DELETE /api/v1/web/profile/{identifier}/follow
+팔로우/언팔로우 - Follow/Unfollow User
+
+둘 다 204만 반환해 갱신된 프로필을 다시 내려주지 않으므로, 조회 중인 프로필 캐시의
+is_following/followers_count를 직접 갱신한다. mutate에 다음 팔로우 상태(true=팔로우,
+false=언팔로우)를 넘긴다.
+*/
+export function useToggleFollowMutation(identifier: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (nextFollowing: boolean) =>
+      nextFollowing ? followUser(identifier) : unfollowUser(identifier),
+    onSuccess: (_data, nextFollowing) => {
+      queryClient.setQueryData<ProfileResponse>(profileKeys.detail(identifier), (prev) =>
+        prev && prev.is_following !== nextFollowing
+          ? {
+              ...prev,
+              is_following: nextFollowing,
+              followers_count: prev.followers_count + (nextFollowing ? 1 : -1),
+            }
+          : prev,
+      );
     },
   });
 }

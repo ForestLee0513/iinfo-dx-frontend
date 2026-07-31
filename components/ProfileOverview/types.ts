@@ -7,6 +7,9 @@ export type ProfileSummary = {
   djId: string | null;
   socialLinks: SocialLink[];
   profileImageUrl: string | null;
+  isFollowing: boolean | null;
+  followersCount: number;
+  followingCount: number;
 };
 
 export type ProfileOverviewProps = {
