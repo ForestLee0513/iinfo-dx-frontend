@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, Button, Skeleton, buttonVariants } from "@fores
 
 import { useLogoutMutation, useMyInfoQuery } from "@/api/auth/queries";
 import { useMobileMenu } from "../contexts/MobileMenuContext";
-import { PROFILE_HREF } from "../constants";
+import { getProfileHref } from "../constants";
 
 // 로그인/회원가입은 이동과 동시에 사이드바를 닫고,
 // 로그아웃은 요청이 성공한 뒤에 닫는다(실패 시엔 열어둬 재시도할 수 있게).
@@ -52,7 +52,7 @@ export function MobileAuthActions() {
   return (
     <div className="flex flex-col gap-2">
       <Link
-        href={PROFILE_HREF}
+        href={getProfileHref(myInfo.data.id)}
         onClick={close}
         aria-label="프로필"
         className="-mx-2 flex items-center gap-3 rounded-md px-2 py-2 hover:bg-accent hover:text-accent-foreground"

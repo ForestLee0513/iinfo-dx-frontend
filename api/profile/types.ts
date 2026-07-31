@@ -1,0 +1,50 @@
+import { PROFILE_USER_ROLE } from "./constants";
+
+/*
+상수값 - constants
+*/
+export type ProfileUserRole = keyof typeof PROFILE_USER_ROLE;
+
+// 소셜 링크 1건 — {platform, url}.
+export interface SocialLink {
+  platform: string;
+  url: string;
+}
+
+/*
+GET /api/v1/web/profile/{identifier}
+프로필 조회 (UUID 또는 handle) - Get Profile
+
+- identifier가 UUID면 user_id로, 아니면 handle로 조회한다(UUID도 handle 패턴도
+  아니면 DB 조회 없이 바로 404).
+- user_profiles에 행이 없으면(가입 트리거 도입 이전 계정 등) 404.
+- is_public=false인 비공개 프로필은 본인만 조회 가능 — 그 외엔 404로 존재 자체를 감춘다.
+- 요청 토큰의 sub가 조회된 user_id와 같을 때만 is_mine=true와 함께 email/provider가 채워진다.
+*/
+export interface ProfileResponse {
+  id: string;
+  handle: string | null;
+  role: ProfileUserRole; // default: "USER"
+  is_public: boolean; // default: true
+  social_links: SocialLink[];
+  dj_name: string | null;
+  dj_id: string | null;
+  profile_image_url: string | null;
+  updated_at: string | null;
+  is_mine: boolean; // default: false
+  email: string | null; // is_mine=true일 때만 값이 채워짐
+  provider: string | null; // is_mine=true일 때만 값이 채워짐
+}
+
+/*
+PATCH /api/v1/web/profile/me
+내 프로필 수정 (handle/social_links) - Update My Profile
+
+본문에 없는 필드는 그대로 유지된다(부분 업데이트). handle을 null로 보내면 핸들을
+해제하고, 이미 다른 사용자가 쓰는 handle이면 409. social_links는 보낸 배열로
+통째로 치환된다(부분 추가/삭제가 아님).
+*/
+export interface ProfileUpdateRequest {
+  handle?: string | null;
+  social_links?: SocialLink[] | null;
+}

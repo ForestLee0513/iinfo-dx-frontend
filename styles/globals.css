@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@forestlee0513/iinfo-dx-design-system/theme.css";
+@import "@forestlee0513/iinfo-dx-design-system/styles.css";
 
 @theme inline {
   --font-sans: var(--font-pretendard), var(--font-pretendard-jp), sans-serif;
