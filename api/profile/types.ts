@@ -34,7 +34,20 @@ export interface ProfileResponse {
   is_mine: boolean; // default: false
   email: string | null; // is_mine=true일 때만 값이 채워짐
   provider: string | null; // is_mine=true일 때만 값이 채워짐
+  followers_count: number; // default: 0
+  following_count: number; // default: 0
+  is_following: boolean | null; // 로그인 사용자의 팔로우 여부 — 미로그인 시 null
 }
+
+/*
+POST /api/v1/web/profile/{identifier}/follow
+팔로우 - Follow User
+이미 팔로우 중이면 그대로 성공(멱등) — 204 No Content
+
+DELETE /api/v1/web/profile/{identifier}/follow
+언팔로우 - Unfollow User
+팔로우 중이 아니었어도 성공(멱등) — 204 No Content
+*/
 
 /*
 PATCH /api/v1/web/profile/me

@@ -79,6 +79,9 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
             djId={profile.data.dj_id}
             socialLinks={profile.data.social_links}
             profileImageUrl={profile.data.profile_image_url}
+            isFollowing={profile.data.is_following}
+            followersCount={profile.data.followers_count}
+            followingCount={profile.data.following_count}
             isOwnProfile={isOwnProfile}
           />
         </div>

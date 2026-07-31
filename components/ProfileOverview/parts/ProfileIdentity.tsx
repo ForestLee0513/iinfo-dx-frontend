@@ -1,13 +1,13 @@
-import { IconLink, IconPlus } from "@tabler/icons-react";
+import { IconLink } from "@tabler/icons-react";
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-  Button,
 } from "@forestlee0513/iinfo-dx-design-system";
 
 import type { OwnProfileSectionProps, ProfileSummary } from "../types";
+import { FollowButton } from "./FollowButton";
 import { ProfileEditDialog } from "./ProfileEditDialog";
 
 export function ProfileIdentity({
@@ -17,6 +17,9 @@ export function ProfileIdentity({
   djId,
   socialLinks,
   profileImageUrl,
+  isFollowing,
+  followersCount,
+  followingCount,
   isOwnProfile,
 }: ProfileSummary & OwnProfileSectionProps) {
   const initial = (handle ?? djName ?? "?")
@@ -41,6 +44,14 @@ export function ProfileIdentity({
           <h2 className="text-xl font-semibold sm:text-2xl">
             {handle ? `@${handle}` : "핸들 미설정"}
           </h2>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <span>
+              <span className="font-semibold text-foreground">{followersCount}</span> 팔로워
+            </span>
+            <span>
+              <span className="font-semibold text-foreground">{followingCount}</span> 팔로잉
+            </span>
+          </div>
           <div className="space-y-0.5 text-sm text-muted-foreground">
             <p>DJ NAME: {djLabel}</p>
             {socialLinks.map((link) => (
@@ -63,13 +74,7 @@ export function ProfileIdentity({
         </div>
       </div>
       {isOwnProfile === false && (
-        <Button
-          variant="outline"
-          className="w-full justify-between sm:w-fit xl:w-full"
-        >
-          팔로우
-          <IconPlus className="size-4" />
-        </Button>
+        <FollowButton identifier={identifier} isFollowing={isFollowing} />
       )}
       {isOwnProfile && (
         <ProfileEditDialog

@@ -19,3 +19,19 @@ export async function updateProfile(body: ProfileUpdateRequest) {
   const { data } = await api.patch<ProfileResponse>(PROFILE_ME_BASE, body);
   return data;
 }
+
+/*
+POST /api/v1/web/profile/{identifier}/follow
+팔로우 - Follow User
+*/
+export async function followUser(identifier: string) {
+  await api.post(`${PROFILE_BASE}/${identifier}/follow`);
+}
+
+/*
+DELETE /api/v1/web/profile/{identifier}/follow
+언팔로우 - Unfollow User
+*/
+export async function unfollowUser(identifier: string) {
+  await api.delete(`${PROFILE_BASE}/${identifier}/follow`);
+}
