@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-import "@example-owner/iinfo-dx-design-system/styles.css";
 
 import type { Metadata } from "next";
 import { pretendard, pretendardJP } from "@/styles/fonts";

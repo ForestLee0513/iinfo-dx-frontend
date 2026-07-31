@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@example-owner/iinfo-dx-design-system/theme.css";
+@import "@example-owner/iinfo-dx-design-system/styles.css";
 
 @theme inline {
   --font-sans: var(--font-pretendard), var(--font-pretendard-jp), sans-serif;
