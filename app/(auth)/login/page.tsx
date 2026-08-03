@@ -23,10 +23,13 @@ import {
   Input,
 } from "@forestlee0513/iinfo-dx-design-system";
 
+import { useQueryClient } from "@tanstack/react-query";
+
 import { AUTH_OAUTH_PROVIDERS } from "@/api/auth/constants";
 import { startOAuthLogin } from "@/api/auth/requests";
 import { useEmailLoginMutation } from "@/api/auth/queries";
 import type { AuthOAuthProvider } from "@/api/auth/types";
+import { profileQueryOptions } from "@/api/profile/queries";
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError<{ detail?: string }>(error)) {
@@ -44,6 +47,7 @@ export default function LoginPage({
   searchParams: Promise<{ error?: string | string[] }>;
 }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const emailLogin = useEmailLoginMutation();
 
   // OAuth 실패 시 백엔드가 ?error=<한글 메시지>를 붙여 홈으로 돌려보내고,
@@ -74,7 +78,18 @@ export default function LoginPage({
         password: String(formData.get("password")),
       },
       {
-        onSuccess: () => router.replace("/"),
+        onSuccess: async (data) => {
+          sessionStorage.setItem("handle_setup_redirected", "1");
+          try {
+            // 프로필을 캐시에 적재하면서 handle 여부도 확인 — 한 번의 요청으로 처리
+            const profile = await queryClient.fetchQuery(
+              profileQueryOptions(data.user.id),
+            );
+            router.replace(`/profile/${profile.handle ?? data.user.id}`);
+          } catch {
+            router.replace(`/profile/${data.user.id}`);
+          }
+        },
       },
     );
   }
@@ -82,7 +97,7 @@ export default function LoginPage({
   function handleOAuthLogin(provider: AuthOAuthProvider) {
     startOAuthLogin({
       provider,
-      redirect: window.location.origin,
+      redirect: `${window.location.origin}/auth/callback`,
     });
   }
 

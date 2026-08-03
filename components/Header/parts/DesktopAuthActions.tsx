@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import {
   Avatar,
@@ -20,6 +21,7 @@ import { useLogoutMutation, useMyInfoQuery } from "@/api/auth/queries";
 import { getProfileHref } from "../constants";
 
 export function DesktopAuthActions() {
+  const router = useRouter();
   const myInfo = useMyInfoQuery();
   const logout = useLogoutMutation();
 
@@ -40,7 +42,7 @@ export function DesktopAuthActions() {
     );
   }
 
-  const initial = myInfo.data.email.charAt(0).toUpperCase();
+  const initial = (myInfo.data.email ?? myInfo.data.id).charAt(0).toUpperCase();
 
   return (
     <DropdownMenu>
@@ -66,7 +68,14 @@ export function DesktopAuthActions() {
           <DropdownMenuItem
             variant="destructive"
             disabled={logout.isPending}
-            onClick={() => logout.mutate()}
+            onClick={() =>
+              logout.mutate(undefined, {
+                onSuccess: () => {
+                  sessionStorage.removeItem("handle_setup_redirected");
+                  router.replace("/");
+                },
+              })
+            }
           >
             {logout.isPending ? "로그아웃 중..." : "로그아웃"}
           </DropdownMenuItem>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { IconChevronRight } from "@tabler/icons-react";
 
 import { Avatar, AvatarFallback, Button, Skeleton, buttonVariants } from "@forestlee0513/iinfo-dx-design-system";
@@ -12,6 +13,7 @@ import { getProfileHref } from "../constants";
 // 로그인/회원가입은 이동과 동시에 사이드바를 닫고,
 // 로그아웃은 요청이 성공한 뒤에 닫는다(실패 시엔 열어둬 재시도할 수 있게).
 export function MobileAuthActions() {
+  const router = useRouter();
   const myInfo = useMyInfoQuery();
   const logout = useLogoutMutation();
   const { close } = useMobileMenu();
@@ -46,7 +48,7 @@ export function MobileAuthActions() {
     );
   }
 
-  const initial = myInfo.data.email.charAt(0).toUpperCase();
+  const initial = (myInfo.data.email ?? myInfo.data.id).charAt(0).toUpperCase();
 
   // 데스크톱에선 아바타 드롭다운이 프로필 진입점이므로, 모바일에선 계정 정보 행 자체를 프로필 링크로 둔다.
   return (
@@ -70,7 +72,15 @@ export function MobileAuthActions() {
         variant="outline"
         size="sm"
         disabled={logout.isPending}
-        onClick={() => logout.mutate(undefined, { onSuccess: close })}
+        onClick={() =>
+          logout.mutate(undefined, {
+            onSuccess: () => {
+              close();
+              sessionStorage.removeItem("handle_setup_redirected");
+              router.replace("/");
+            },
+          })
+        }
       >
         {logout.isPending ? "로그아웃 중..." : "로그아웃"}
       </Button>
