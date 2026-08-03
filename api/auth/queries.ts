@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query";
 
 import { useAuthReady } from "@/providers/AuthReadyContext";
-import { getMyInfo, loginWithEmail, logout, refreshSession } from "./requests";
+import { getMyInfo, loginWithEmail, logout, refreshSession, signUp } from "./requests";
 import type { AuthLoginResponse, AuthMyInfoResponse } from "./types";
 
 /*
@@ -27,14 +27,15 @@ export function seedMyInfo(
 ) {
   queryClient.setQueryData<AuthMyInfoResponse>(authKeys.me(), {
     id: user.id,
-    email: user.email ?? "",
-    provider: user.provider ?? "email",
+    email: user.email,
+    provider: user.provider,
     app_role: user.app_role,
+    is_public: user.is_public,
   });
 }
 
 /*
-POST /api/v1/web/auth/login
+POST /api/v1/auth/login
 이메일 로그인 - Email Login
 */
 export function useEmailLoginMutation() {
@@ -49,7 +50,25 @@ export function useEmailLoginMutation() {
 }
 
 /*
-POST /api/v1/web/auth/refresh
+POST /api/v1/auth/signup
+이메일 회원가입 - Sign Up
+이메일 확인이 꺼져 있으면(session/user 있음) me 캐시를 바로 채운다.
+*/
+export function useSignUpMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: signUp,
+    onSuccess: (data) => {
+      if (data.session && data.user) {
+        seedMyInfo(queryClient, { session: data.session, user: data.user });
+      }
+    },
+  });
+}
+
+/*
+POST /api/v1/auth/refresh
 세션 갱신 (쿠키 기반, 본문 불필요) - Refresh Session
 */
 export function useRefreshSessionMutation() {
@@ -64,7 +83,7 @@ export function useRefreshSessionMutation() {
 }
 
 /*
-GET /api/v1/web/auth/me
+GET /api/v1/auth/me
 현재 로그인 사용자 조회 - Get Current Logged-in User
 */
 // staleTime Infinity — 유저 정보는 login/logout/refresh로만 갱신하므로 자동 refetch 금지.
@@ -85,7 +104,7 @@ export function useMyInfoQuery() {
 }
 
 /*
-POST /api/v1/web/auth/logout
+POST /api/v1/auth/logout
 로그아웃 - Logout
 */
 export function useLogoutMutation() {
