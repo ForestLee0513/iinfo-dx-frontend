@@ -5,8 +5,15 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-import { followUser, getProfile, unfollowUser, updateProfile } from "./requests";
-import type { ProfileResponse } from "./types";
+import {
+  followUser,
+  getFollowers,
+  getFollowing,
+  getProfile,
+  unfollowUser,
+  updateProfile,
+} from "./requests";
+import type { FollowListParams, ProfileResponse } from "./types";
 
 /*
 쿼리 키 - Query Keys
@@ -14,6 +21,10 @@ import type { ProfileResponse } from "./types";
 export const profileKeys = {
   all: ["profile"] as const,
   detail: (identifier: string) => [...profileKeys.all, identifier] as const,
+  followers: (identifier: string) =>
+    [...profileKeys.detail(identifier), "followers"] as const,
+  following: (identifier: string) =>
+    [...profileKeys.detail(identifier), "following"] as const,
 };
 
 /*
@@ -29,7 +40,7 @@ export function seedProfile(
 }
 
 /*
-GET /api/v1/web/profile/{identifier}
+GET /api/v1/profile/{identifier}
 프로필 조회 (UUID 또는 handle) - Get Profile
 */
 export function profileQueryOptions(identifier: string) {
@@ -48,7 +59,37 @@ export function useProfileQuery(identifier: string | undefined) {
 }
 
 /*
-PATCH /api/v1/web/profile/me
+GET /api/v1/profile/{identifier}/followers
+팔로워 목록 - Get Followers
+*/
+export function useFollowersQuery(
+  identifier: string | undefined,
+  params?: FollowListParams,
+) {
+  return useQuery({
+    queryKey: [...(profileKeys.followers(identifier ?? "")), params],
+    queryFn: () => getFollowers(identifier!, params),
+    enabled: Boolean(identifier),
+  });
+}
+
+/*
+GET /api/v1/profile/{identifier}/following
+팔로잉 목록 - Get Following
+*/
+export function useFollowingQuery(
+  identifier: string | undefined,
+  params?: FollowListParams,
+) {
+  return useQuery({
+    queryKey: [...(profileKeys.following(identifier ?? "")), params],
+    queryFn: () => getFollowing(identifier!, params),
+    enabled: Boolean(identifier),
+  });
+}
+
+/*
+PATCH /api/v1/profile/me
 내 프로필 수정 (handle/social_links) - Update My Profile
 
 identifier는 현재 조회 중인 프로필의 쿼리 키(useProfileQuery에 넘긴 값과 동일해야
@@ -67,7 +108,7 @@ export function useUpdateProfileMutation(identifier: string) {
 }
 
 /*
-POST/DELETE /api/v1/web/profile/{identifier}/follow
+POST/DELETE /api/v1/profile/{identifier}/follow
 팔로우/언팔로우 - Follow/Unfollow User
 
 둘 다 204만 반환해 갱신된 프로필을 다시 내려주지 않으므로, 조회 중인 프로필 캐시의
