@@ -13,6 +13,7 @@ import { useProfileQuery } from "@/api/profile/queries";
 import { useAuthReady } from "@/providers/AuthReadyContext";
 import { ClearLampRatio } from "./parts/ClearLampRatio";
 import { DifficultyProgress } from "./parts/DifficultyProgress";
+import { HandleOnboardingBanner } from "./parts/HandleOnboardingBanner";
 import { ProfileIdentity } from "./parts/ProfileIdentity";
 import { UpdateHistory } from "./parts/UpdateHistory";
 import type { ProfileOverviewProps } from "./types";
@@ -69,6 +70,12 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
   return (
     <div className={CONTAINER_CLASS_NAME}>
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">프로필</h1>
+
+      {isOwnProfile && !profile.data.handle && (
+        <div className="mt-6">
+          <HandleOnboardingBanner identifier={userId} />
+        </div>
+      )}
 
       <div className="mt-8 flex flex-col gap-10 xl:flex-row! xl:items-start xl:gap-16">
         <div className="xl:w-80 xl:shrink-0">
