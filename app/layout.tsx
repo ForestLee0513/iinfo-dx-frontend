@@ -2,6 +2,8 @@ import "@/styles/globals.css";
 
 import type { Metadata } from "next";
 import { pretendard, pretendardJP } from "@/styles/fonts";
+import { Toaster } from "@forestlee0513/iinfo-dx-design-system";
+
 import { Header } from "@/components/Header";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { QueryProvider } from "@/providers/QueryProvider";
@@ -26,6 +28,7 @@ export default function RootLayout({
           <AuthProvider>
             <Header />
             {children}
+            <Toaster />
           </AuthProvider>
         </QueryProvider>
       </body>
