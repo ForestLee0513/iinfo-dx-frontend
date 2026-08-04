@@ -12,7 +12,7 @@ export function Hero() {
         IInfo DX
       </h1>
 
-      <p className="max-w-[288px] text-base leading-6 text-muted-foreground md:max-w-[483px]">
+      <p className="max-w-[288px] text-base leading-6 text-muted-foreground md:max-w-[483px] break-keep">
         beatmania IIDX의 비공식 난이도표를 쉽고 간편하게 관리할 수 있습니다.
         <br />
         e-Amusement 기반 데이터 연동, 프로필 생성 / 공유 기능을 제공합니다.
