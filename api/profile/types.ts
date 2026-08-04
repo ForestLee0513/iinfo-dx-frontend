@@ -87,3 +87,26 @@ export interface FollowListResponse {
   per_page: number;
   total: number;
 }
+
+/*
+GET /api/v1/profile/iidx/{identifier}
+IIDX 서비스 프로필 조회 - Get IIDX Profile
+
+- iidx.profiles 행이 없으면(미온보딩) 404.
+- iidx_is_public=false인 비공개 프로필은 본인만 조회 가능(404로 은닉).
+- is_public은 플랫폼 수준, iidx_is_public은 IIDX 서비스 수준 공개 여부다.
+*/
+export interface IidxProfileResponse extends ProfileResponse {
+  iidx_is_public: boolean; // default: true
+}
+
+/*
+PATCH /api/v1/profile/iidx/me
+내 IIDX 서비스 프로필 공개 여부 수정 - Update My IIDX Profile
+
+iidx.profiles 행이 없으면(미온보딩) 404.
+플랫폼 수준 공개 여부 수정은 PATCH /profile/me를 사용할 것.
+*/
+export interface IidxProfileUpdateRequest {
+  is_public?: boolean | null;
+}

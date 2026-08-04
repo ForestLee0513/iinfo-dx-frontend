@@ -9,7 +9,7 @@ import {
   Skeleton,
 } from "@forestlee0513/iinfo-dx-design-system";
 
-import { useProfileQuery } from "@/api/profile/queries";
+import { useIidxProfileQuery } from "@/api/profile/queries";
 import { useAuthReady } from "@/providers/AuthReadyContext";
 import { ClearLampRatio } from "./parts/ClearLampRatio";
 import { DifficultyProgress } from "./parts/DifficultyProgress";
@@ -30,7 +30,7 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
   // 세션 복원(/refresh)이 끝나기 전에 조회하면 Authorization 없이 나가 is_mine이
   // 항상 false로 캐시된다 — AuthProvider 부트스트랩이 끝난 뒤에만 요청한다.
   const ready = useAuthReady();
-  const profile = useProfileQuery(ready ? userId : undefined);
+  const profile = useIidxProfileQuery(ready ? userId : undefined);
 
   if (profile.isPending) {
     return (

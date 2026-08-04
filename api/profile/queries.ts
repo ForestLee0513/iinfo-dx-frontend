@@ -9,11 +9,18 @@ import {
   followUser,
   getFollowers,
   getFollowing,
+  getIidxProfile,
   getProfile,
   unfollowUser,
+  updateIidxProfile,
   updateProfile,
 } from "./requests";
-import type { FollowListParams, ProfileResponse } from "./types";
+import type {
+  FollowListParams,
+  IidxProfileResponse,
+  IidxProfileUpdateRequest,
+  ProfileResponse,
+} from "./types";
 
 /*
 쿼리 키 - Query Keys
@@ -27,16 +34,25 @@ export const profileKeys = {
     [...profileKeys.detail(identifier), "following"] as const,
 };
 
-/*
-프로필 수정 응답으로 조회 중인 프로필의 캐시를 바로 채워서
-저장 직후 GET을 다시 요청하지 않아도 되게 한다
-*/
+export const iidxProfileKeys = {
+  all: ["iidxProfile"] as const,
+  detail: (identifier: string) => [...iidxProfileKeys.all, identifier] as const,
+};
+
 export function seedProfile(
   queryClient: ReturnType<typeof useQueryClient>,
   identifier: string,
   data: ProfileResponse,
 ) {
   queryClient.setQueryData<ProfileResponse>(profileKeys.detail(identifier), data);
+}
+
+export function seedIidxProfile(
+  queryClient: ReturnType<typeof useQueryClient>,
+  identifier: string,
+  data: IidxProfileResponse,
+) {
+  queryClient.setQueryData<IidxProfileResponse>(iidxProfileKeys.detail(identifier), data);
 }
 
 /*
@@ -54,6 +70,24 @@ export function profileQueryOptions(identifier: string) {
 export function useProfileQuery(identifier: string | undefined) {
   return useQuery({
     ...profileQueryOptions(identifier ?? ""),
+    enabled: Boolean(identifier),
+  });
+}
+
+/*
+GET /api/v1/profile/iidx/{identifier}
+IIDX 서비스 프로필 조회 - Get IIDX Profile
+*/
+export function iidxProfileQueryOptions(identifier: string) {
+  return queryOptions({
+    queryKey: iidxProfileKeys.detail(identifier),
+    queryFn: () => getIidxProfile(identifier),
+  });
+}
+
+export function useIidxProfileQuery(identifier: string | undefined) {
+  return useQuery({
+    ...iidxProfileQueryOptions(identifier ?? ""),
     enabled: Boolean(identifier),
   });
 }
@@ -103,6 +137,27 @@ export function useUpdateProfileMutation(identifier: string) {
     mutationFn: updateProfile,
     onSuccess: (data) => {
       seedProfile(queryClient, identifier, data);
+      // IIDX 서비스 프로필 캐시가 이미 있으면 플랫폼 필드를 병합한다.
+      // ProfileResponse가 IidxProfileResponse의 부분집합이므로 iidx_is_public은 기존 값을 보존한다.
+      queryClient.setQueryData<IidxProfileResponse>(
+        iidxProfileKeys.detail(identifier),
+        (prev) => (prev ? { ...prev, ...data } : prev),
+      );
+    },
+  });
+}
+
+/*
+PATCH /api/v1/profile/iidx/me
+내 IIDX 서비스 프로필 공개 여부 수정 - Update My IIDX Profile
+*/
+export function useUpdateIidxProfileMutation(identifier: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (body: IidxProfileUpdateRequest) => updateIidxProfile(body),
+    onSuccess: (data) => {
+      seedIidxProfile(queryClient, identifier, data);
     },
   });
 }
