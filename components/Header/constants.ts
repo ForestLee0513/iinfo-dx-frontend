@@ -8,5 +8,5 @@ export const getProfileHref = (userId: string) => `/profile/${userId}`;
 export const NAV_ITEMS: NavItem[] = [
   { label: "서열표", href: "#" },
   { label: "업데이트 기록", href: "#" },
-  { label: "갱신하기", href: "#", desktopOnly: true },
+  { label: "갱신하기", href: "/sync" },
 ];
