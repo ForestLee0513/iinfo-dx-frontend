@@ -38,7 +38,10 @@ function getErrorMessage(error: unknown) {
     }
     const detail = error.response?.data?.detail;
     if (Array.isArray(detail)) {
-      return detail.map((item) => item.msg).join(" ") || "프로필 수정에 실패했습니다.";
+      return (
+        detail.map((item) => item.msg).join(" ") ||
+        "프로필 수정에 실패했습니다."
+      );
     }
     return detail ?? "프로필 수정에 실패했습니다.";
   }
@@ -72,7 +75,9 @@ export function ProfileEditDialog({
   }
 
   function updateLink(index: number, patch: Partial<SocialLink>) {
-    setLinks((prev) => prev.map((link, i) => (i === index ? { ...link, ...patch } : link)));
+    setLinks((prev) =>
+      prev.map((link, i) => (i === index ? { ...link, ...patch } : link)),
+    );
   }
 
   function removeLink(index: number) {
@@ -116,7 +121,9 @@ export function ProfileEditDialog({
         <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
           <DialogHeader className="shrink-0">
             <DialogTitle>프로필 수정</DialogTitle>
-            <DialogDescription>핸들과 소셜 링크를 변경할 수 있습니다.</DialogDescription>
+            <DialogDescription>
+              핸들과 소셜 링크를 변경할 수 있습니다.
+            </DialogDescription>
           </DialogHeader>
 
           <FieldGroup className="min-h-0 max-h-[450px] flex-1 overflow-y-auto py-4 pr-1">
@@ -126,7 +133,7 @@ export function ProfileEditDialog({
                 id="profile-edit-handle"
                 value={handleValue}
                 onChange={(event) => setHandleValue(event.target.value)}
-                placeholder="예: forestlee0513"
+                placeholder="예: username"
                 maxLength={30}
               />
             </Field>
@@ -139,7 +146,9 @@ export function ProfileEditDialog({
                     <Input
                       aria-label="플랫폼"
                       value={link.platform}
-                      onChange={(event) => updateLink(index, { platform: event.target.value })}
+                      onChange={(event) =>
+                        updateLink(index, { platform: event.target.value })
+                      }
                       placeholder="플랫폼 (예: X)"
                       className="w-28 shrink-0"
                       maxLength={30}
@@ -147,7 +156,9 @@ export function ProfileEditDialog({
                     <Input
                       aria-label="URL"
                       value={link.url}
-                      onChange={(event) => updateLink(index, { url: event.target.value })}
+                      onChange={(event) =>
+                        updateLink(index, { url: event.target.value })
+                      }
                       placeholder="https://..."
                       className="flex-1"
                       maxLength={500}
@@ -177,12 +188,16 @@ export function ProfileEditDialog({
             </Field>
 
             {updateProfile.isError && (
-              <FieldError errors={[{ message: getErrorMessage(updateProfile.error) }]} />
+              <FieldError
+                errors={[{ message: getErrorMessage(updateProfile.error) }]}
+              />
             )}
           </FieldGroup>
 
           <DialogFooter className="shrink-0">
-            <DialogClose render={<Button type="button" variant="outline" />}>취소</DialogClose>
+            <DialogClose render={<Button type="button" variant="outline" />}>
+              취소
+            </DialogClose>
             <Button type="submit" disabled={updateProfile.isPending}>
               {updateProfile.isPending ? "저장 중..." : "저장"}
             </Button>
