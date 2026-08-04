@@ -9,11 +9,12 @@ import {
   Skeleton,
 } from "@forestlee0513/iinfo-dx-design-system";
 
-import { useIidxProfileQuery } from "@/api/profile/queries";
+import { useIidxProfileQuery, useProfileQuery } from "@/api/profile/queries";
 import { useAuthReady } from "@/providers/AuthReadyContext";
 import { ClearLampRatio } from "./parts/ClearLampRatio";
 import { DifficultyProgress } from "./parts/DifficultyProgress";
 import { HandleOnboardingBanner } from "./parts/HandleOnboardingBanner";
+import { IidxOnboardingBanner } from "./parts/IidxOnboardingBanner";
 import { ProfileIdentity } from "./parts/ProfileIdentity";
 import { UpdateHistory } from "./parts/UpdateHistory";
 import type { ProfileOverviewProps } from "./types";
@@ -32,6 +33,13 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
   const ready = useAuthReady();
   const profile = useIidxProfileQuery(ready ? userId : undefined);
 
+  // IIDX 프로필 404 시 — 유저 자체가 없는 경우와 미온보딩을 구분하기 위해 base 프로필을 추가로 조회한다.
+  const iidxNotFound =
+    profile.isError &&
+    isAxiosError(profile.error) &&
+    profile.error.response?.status === 404;
+  const baseProfile = useProfileQuery(iidxNotFound ? userId : undefined);
+
   if (profile.isPending) {
     return (
       <div className={CONTAINER_CLASS_NAME}>
@@ -45,18 +53,33 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
   }
 
   if (profile.isError) {
-    // 서버는 프로필이 없거나 비공개인 경우를 구분하지 않고 404로 통일해 존재 여부를 감춘다.
-    const isNotFound =
-      isAxiosError(profile.error) && profile.error.response?.status === 404;
+    // IIDX 404 + base 프로필 조회 중 → 스켈레톤으로 대기
+    if (iidxNotFound && baseProfile.isPending) {
+      return (
+        <div className={CONTAINER_CLASS_NAME}>
+          <Skeleton className="h-48 w-full" />
+        </div>
+      );
+    }
 
+    // IIDX 404 + 본인 프로필 → 미온보딩 상태
+    if (iidxNotFound && baseProfile.isSuccess && baseProfile.data.is_mine) {
+      return (
+        <div className={CONTAINER_CLASS_NAME}>
+          <IidxOnboardingBanner />
+        </div>
+      );
+    }
+
+    // 그 외(base 프로필도 없거나 네트워크 오류 등)
     return (
       <div className={CONTAINER_CLASS_NAME}>
         <Alert variant="destructive">
           <AlertTitle>
-            {isNotFound ? "프로필을 찾을 수 없습니다" : "프로필을 불러오지 못했습니다"}
+            {iidxNotFound ? "프로필을 찾을 수 없습니다" : "프로필을 불러오지 못했습니다"}
           </AlertTitle>
           <AlertDescription>
-            {isNotFound
+            {iidxNotFound
               ? "존재하지 않거나 비공개로 설정된 프로필입니다."
               : "잠시 후 다시 시도해주세요."}
           </AlertDescription>
