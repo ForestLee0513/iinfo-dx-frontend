@@ -1,8 +1,10 @@
 import { api } from "@/lib/axios";
-import { PROFILE_BASE, PROFILE_ME_BASE } from "./constants";
+import { PROFILE_BASE, PROFILE_IIDX_BASE, PROFILE_IIDX_ME_BASE, PROFILE_ME_BASE } from "./constants";
 import type {
   FollowListParams,
   FollowListResponse,
+  IidxProfileResponse,
+  IidxProfileUpdateRequest,
   ProfileResponse,
   ProfileUpdateRequest,
 } from "./types";
@@ -62,5 +64,23 @@ export async function getFollowing(identifier: string, params?: FollowListParams
     `${PROFILE_BASE}/${identifier}/following`,
     { params },
   );
+  return data;
+}
+
+/*
+GET /api/v1/profile/iidx/{identifier}
+IIDX 서비스 프로필 조회 - Get IIDX Profile
+*/
+export async function getIidxProfile(identifier: string) {
+  const { data } = await api.get<IidxProfileResponse>(`${PROFILE_IIDX_BASE}/${identifier}`);
+  return data;
+}
+
+/*
+PATCH /api/v1/profile/iidx/me
+내 IIDX 서비스 프로필 공개 여부 수정 - Update My IIDX Profile
+*/
+export async function updateIidxProfile(body: IidxProfileUpdateRequest) {
+  const { data } = await api.patch<IidxProfileResponse>(PROFILE_IIDX_ME_BASE, body);
   return data;
 }
