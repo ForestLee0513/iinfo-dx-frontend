@@ -13,17 +13,17 @@ export function UploadTokenField({ idPrefix }: UploadTokenFieldProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor={`${idPrefix}-upload-token`}>임시 업로드 토큰</Label>
+      <Label htmlFor={`${idPrefix}-upload-token`}>업로드 토큰</Label>
       <div className="flex flex-col gap-2">
         <Input
           id={`${idPrefix}-upload-token`}
           readOnly
           value={data?.token ?? ""}
-          placeholder="갱신 버튼을 눌러 토큰을 발급받으세요."
+          placeholder="발급하기 버튼을 눌러 토큰을 발급받으세요."
           className="font-mono text-sm"
         />
         <Button onClick={() => mutate()} disabled={isPending}>
-          {isPending ? "발급 중..." : "갱신"}
+          {isPending ? "발급 중..." : "발급하기"}
         </Button>
       </div>
       {data && (
