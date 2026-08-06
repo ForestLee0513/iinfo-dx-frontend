@@ -20,8 +20,8 @@ export function IidxOnboardingBanner() {
         <div className="text-sm">
           <p className="font-medium">갱신하는 방법</p>
           <ul className="mt-2 list-inside list-disc space-y-1 text-muted-foreground">
-            <li>e-Amusement에서 북마크릿 스크립트를 실행하세요</li>
-            <li>실행 결과 CSV를 갱신하기 페이지에서 업로드하세요</li>
+            <li>갱신하기 페이지에서 북마크릿 스크립트를 저장하세요</li>
+            <li>e-Amusement에서 북마크릿 스크립트를 실행해 갱신을 완료하세요</li>
           </ul>
         </div>
 
