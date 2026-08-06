@@ -27,7 +27,7 @@ export function FeatureSection({
           imagePosition === "end" ? "md:col-start-1" : "md:col-start-4",
         )}
       >
-        <h2 className="text-[28px] leading-[36px] font-normal text-foreground xl:text-[42px] xl:leading-[50px] xl:font-light">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           {title}
         </h2>
         <p className="text-base leading-6 text-muted-foreground">{description}</p>
