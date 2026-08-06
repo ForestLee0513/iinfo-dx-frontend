@@ -1,6 +1,7 @@
 "use client";
 
-import { IconCopy } from "@tabler/icons-react";
+import Link from "next/link";
+import { IconCopy, IconHistory } from "@tabler/icons-react";
 import { toast } from "sonner";
 
 import {
@@ -13,6 +14,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  buttonVariants,
 } from "@forestlee0513/iinfo-dx-design-system";
 
 import { UploadTokenField } from "./parts/UploadTokenField";
@@ -26,10 +28,20 @@ export function SyncGuide() {
   };
 
   return (
-    <main className="flex-1 px-4 pt-10 md:pt-[60px] xl:px-60 2xl:pt-[120px]">
-      <h1 className="text-[32px] font-normal leading-[40px] text-foreground xl:text-[42px] xl:font-light xl:leading-[50px]">
-        갱신하기
-      </h1>
+    <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-8 md:px-6 xl:px-12! xl:py-12">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          갱신하기
+        </h1>
+        {/* 지난 성적 스냅샷으로 복구하는 페이지로 이동 */}
+        <Link
+          href="/restore"
+          className={buttonVariants({ variant: "outline", size: "sm" })}
+        >
+          <IconHistory className="size-4" />
+          복구하기
+        </Link>
+      </div>
 
       <Tabs defaultValue="pc" className="mt-4">
         <TabsList variant="line">

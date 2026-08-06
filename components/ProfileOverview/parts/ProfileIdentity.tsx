@@ -1,9 +1,11 @@
-import { IconLink } from "@tabler/icons-react";
+import Link from "next/link";
+import { IconHistory, IconLink } from "@tabler/icons-react";
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
+  buttonVariants,
 } from "@forestlee0513/iinfo-dx-design-system";
 
 import type { OwnProfileSectionProps, ProfileSummary } from "../types";
@@ -77,11 +79,24 @@ export function ProfileIdentity({
         <FollowButton identifier={identifier} isFollowing={isFollowing} />
       )}
       {isOwnProfile && (
-        <ProfileEditDialog
-          identifier={identifier}
-          handle={handle}
-          socialLinks={socialLinks}
-        />
+        <>
+          <ProfileEditDialog
+            identifier={identifier}
+            handle={handle}
+            socialLinks={socialLinks}
+          />
+          {/* 본인 프로필에서만 노출 — 지난 성적 스냅샷으로 복구하는 페이지로 이동 */}
+          <Link
+            href="/restore"
+            className={buttonVariants({
+              variant: "outline",
+              className: "w-full justify-between sm:w-fit xl:w-full",
+            })}
+          >
+            복구하기
+            <IconHistory className="size-4" />
+          </Link>
+        </>
       )}
     </div>
   );
