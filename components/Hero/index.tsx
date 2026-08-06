@@ -8,7 +8,7 @@ import { buttonVariants, cn } from "@forestlee0513/iinfo-dx-design-system";
 export function Hero() {
   return (
     <section className="flex flex-col items-center gap-6 px-4 py-16 text-center md:py-20 xl:py-28">
-      <h1 className="text-[32px] leading-[40px] font-normal xl:text-[54px] xl:leading-[64px] xl:font-light">
+      <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
         IInfo DX
       </h1>
 
