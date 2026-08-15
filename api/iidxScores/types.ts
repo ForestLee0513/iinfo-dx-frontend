@@ -44,3 +44,38 @@ export interface RestoreResponse {
   play_style: string;
   applied_at: string; // ISO date-time
 }
+
+/*
+GET /api/v1/iidx/scores/summary
+클리어 현황 요약 (클리어 램프 비율) - Get Score Summary
+*/
+export interface ScoreSummaryParams {
+  identifier: string; // 대상 유저의 UUID 또는 handle
+  style: IidxPlayStyle;
+  level?: number; // 생략하면 해당 스타일 전체 레벨 합산
+}
+
+// 레벨/스타일 기준 클리어 램프별 채보 개수 (8종 표준 램프).
+export interface ClearLampCounts {
+  no_play: number;
+  failed: number;
+  assist_clear: number;
+  easy_clear: number;
+  clear: number;
+  hard_clear: number;
+  ex_hard_clear: number;
+  full_combo: number;
+}
+
+// ClearLampCounts와 동일한 키의 비율(%, 소수 1자리). total=0이면 전부 0.0.
+export type ClearLampPercentages = Record<keyof ClearLampCounts, number>;
+
+export interface ScoreSummaryResponse {
+  play_style: string;
+  level: number | null;
+  total: number;
+  counts: ClearLampCounts;
+  percentages: ClearLampPercentages;
+  // level 필터와 무관하게 해당 스타일에 존재하는 전체 레벨 목록 — 난이도 선택 UI 구성용.
+  available_levels: number[];
+}

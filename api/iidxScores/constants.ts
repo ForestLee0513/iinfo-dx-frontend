@@ -1,6 +1,7 @@
 export const IIDX_SCORES_BASE = "/api/v1/iidx/scores";
 export const IIDX_SCORES_TOKEN_URL = `${IIDX_SCORES_BASE}/token`;
 export const IIDX_SCORES_SNAPSHOTS_URL = `${IIDX_SCORES_BASE}/snapshots`;
+export const IIDX_SCORES_SUMMARY_URL = `${IIDX_SCORES_BASE}/summary`;
 export const iidxScoresRestoreUrl = (uploadId: string) =>
   `${IIDX_SCORES_BASE}/restore/${uploadId}`;
 

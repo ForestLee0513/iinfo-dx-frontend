@@ -1,12 +1,15 @@
 import { api } from "@/lib/axios";
 import {
   IIDX_SCORES_SNAPSHOTS_URL,
+  IIDX_SCORES_SUMMARY_URL,
   IIDX_SCORES_TOKEN_URL,
   iidxScoresRestoreUrl,
 } from "./constants";
 import type {
   IidxPlayStyle,
   RestoreResponse,
+  ScoreSummaryParams,
+  ScoreSummaryResponse,
   SnapshotListResponse,
   UploadTokenResponse,
 } from "./types";
@@ -40,5 +43,20 @@ export async function restoreSnapshot(uploadId: string) {
   const { data } = await api.post<RestoreResponse>(
     iidxScoresRestoreUrl(uploadId),
   );
+  return data;
+}
+
+/*
+GET /api/v1/iidx/scores/summary
+클리어 현황 요약 (클리어 램프 비율) - Get Score Summary
+*/
+export async function getScoreSummary({
+  identifier,
+  style,
+  level,
+}: ScoreSummaryParams) {
+  const { data } = await api.get<ScoreSummaryResponse>(IIDX_SCORES_SUMMARY_URL, {
+    params: { identifier, style, level },
+  });
   return data;
 }
