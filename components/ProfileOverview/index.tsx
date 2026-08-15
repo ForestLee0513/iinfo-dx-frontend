@@ -118,7 +118,7 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
 
         <div className="flex flex-1 flex-col gap-10">
           <DifficultyProgress isOwnProfile={isOwnProfile} />
-          <ClearLampRatio />
+          <ClearLampRatio userId={ready ? userId : undefined} />
           <UpdateHistory />
         </div>
       </div>

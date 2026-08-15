@@ -5,8 +5,13 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-import { createUploadToken, getSnapshots, restoreSnapshot } from "./requests";
-import type { IidxPlayStyle } from "./types";
+import {
+  createUploadToken,
+  getScoreSummary,
+  getSnapshots,
+  restoreSnapshot,
+} from "./requests";
+import type { IidxPlayStyle, ScoreSummaryParams } from "./types";
 
 /*
 쿼리 키 - Query Keys
@@ -16,6 +21,9 @@ export const iidxScoresKeys = {
   // 스냅샷 목록은 플레이 스타일(SP/DP)별로 캐시를 분리한다.
   snapshots: (style: IidxPlayStyle) =>
     [...iidxScoresKeys.all, "snapshots", style] as const,
+  // 클리어 현황 요약은 조회 대상(identifier)·스타일·레벨 조합별로 캐시를 분리한다.
+  summary: (identifier: string, style: IidxPlayStyle, level: number | undefined) =>
+    [...iidxScoresKeys.all, "summary", identifier, style, level ?? "all"] as const,
 };
 
 /*
@@ -60,5 +68,26 @@ export function useRestoreSnapshotMutation(style: IidxPlayStyle) {
         queryKey: iidxScoresKeys.snapshots(style),
       });
     },
+  });
+}
+
+/*
+GET /api/v1/iidx/scores/summary
+클리어 현황 요약 (클리어 램프 비율) - Get Score Summary
+*/
+export function summaryQueryOptions({ identifier, style, level }: ScoreSummaryParams) {
+  return queryOptions({
+    queryKey: iidxScoresKeys.summary(identifier, style, level),
+    queryFn: () => getScoreSummary({ identifier, style, level }),
+  });
+}
+
+// identifier가 아직 없으면(프로필 조회 전 등) 쿼리를 비활성화한다.
+export function useScoreSummaryQuery(
+  params: Omit<ScoreSummaryParams, "identifier"> & { identifier: string | undefined },
+) {
+  return useQuery({
+    ...summaryQueryOptions({ ...params, identifier: params.identifier ?? "" }),
+    enabled: Boolean(params.identifier),
   });
 }
