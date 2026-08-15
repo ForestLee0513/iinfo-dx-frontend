@@ -12,7 +12,7 @@ import {
 import { useIidxProfileQuery, useProfileQuery } from "@/api/profile/queries";
 import { useAuthReady } from "@/providers/AuthReadyContext";
 import { ClearLampRatio } from "./parts/ClearLampRatio";
-import { DifficultyProgress } from "./parts/DifficultyProgress";
+// import { DifficultyProgress } from "./parts/DifficultyProgress";
 import { HandleOnboardingBanner } from "./parts/HandleOnboardingBanner";
 import { IidxOnboardingBanner } from "./parts/IidxOnboardingBanner";
 import { ProfileIdentity } from "./parts/ProfileIdentity";
@@ -76,7 +76,9 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
       <div className={CONTAINER_CLASS_NAME}>
         <Alert variant="destructive">
           <AlertTitle>
-            {iidxNotFound ? "프로필을 찾을 수 없습니다" : "프로필을 불러오지 못했습니다"}
+            {iidxNotFound
+              ? "프로필을 찾을 수 없습니다"
+              : "프로필을 불러오지 못했습니다"}
           </AlertTitle>
           <AlertDescription>
             {iidxNotFound
@@ -117,7 +119,7 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
         </div>
 
         <div className="flex flex-1 flex-col gap-10">
-          <DifficultyProgress isOwnProfile={isOwnProfile} />
+          {/* <DifficultyProgress isOwnProfile={isOwnProfile} /> */}
           <ClearLampRatio userId={ready ? userId : undefined} />
           <UpdateHistory />
         </div>
