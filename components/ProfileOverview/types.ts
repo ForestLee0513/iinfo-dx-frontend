@@ -45,3 +45,9 @@ export type HistoryEntry = {
   // 갱신으로 도달한 클리어 램프 — 카드 좌측 강조 테두리 색상을 결정한다.
   lampId: ClearLampSegment["id"];
 };
+
+// react-calendar-heatmap의 values 항목 — 날짜별 점수 갱신 횟수.
+export type ActivityHeatMapValue = {
+  date: string;
+  count: number;
+};
