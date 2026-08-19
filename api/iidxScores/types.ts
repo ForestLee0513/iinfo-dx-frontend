@@ -79,3 +79,27 @@ export interface ScoreSummaryResponse {
   // level 필터와 무관하게 해당 스타일에 존재하는 전체 레벨 목록 — 난이도 선택 UI 구성용.
   available_levels: number[];
 }
+
+/*
+GET /api/v1/iidx/scores/upload-calendar
+날짜별 업로드 횟수 (기여도 그래프) - Get Upload Calendar
+*/
+export interface UploadCalendarParams {
+  identifier: string; // 대상 유저의 UUID 또는 handle
+  style?: IidxPlayStyle; // 생략하면 SP+DP 합산
+  since?: string; // 조회 시작 날짜 (YYYY-MM-DD, tz 기준). 생략하면 until - (days-1)
+  until?: string; // 조회 종료 날짜 (YYYY-MM-DD, tz 기준). 생략하면 tz 기준 오늘
+  days?: number; // since를 생략했을 때 until부터 과거로 집계할 일수 (기본 365, 최대 366)
+  tz?: string; // 집계 기준 IANA 타임존 (예: Asia/Seoul). 생략하면 UTC
+}
+
+export interface UploadCalendarResponse {
+  style: string | null;
+  tz: string;
+  since: string; // ISO date (tz 기준 조회 시작일)
+  until: string; // ISO date (tz 기준 조회 종료일)
+  total: number;
+  // 날짜(YYYY-MM-DD, tz 기준) → 업로드 횟수. 업로드가 없는 날짜도 count=0으로
+  // 포함된다 — FE에서 별도 gap-filling 불필요.
+  days: Record<string, number>;
+}
