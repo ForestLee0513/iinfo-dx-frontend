@@ -3,6 +3,7 @@ import {
   IIDX_SCORES_SNAPSHOTS_URL,
   IIDX_SCORES_SUMMARY_URL,
   IIDX_SCORES_TOKEN_URL,
+  IIDX_SCORES_UPLOAD_CALENDAR_URL,
   iidxScoresRestoreUrl,
 } from "./constants";
 import type {
@@ -11,6 +12,8 @@ import type {
   ScoreSummaryParams,
   ScoreSummaryResponse,
   SnapshotListResponse,
+  UploadCalendarParams,
+  UploadCalendarResponse,
   UploadTokenResponse,
 } from "./types";
 
@@ -58,5 +61,24 @@ export async function getScoreSummary({
   const { data } = await api.get<ScoreSummaryResponse>(IIDX_SCORES_SUMMARY_URL, {
     params: { identifier, style, level },
   });
+  return data;
+}
+
+/*
+GET /api/v1/iidx/scores/upload-calendar
+날짜별 업로드 횟수 (기여도 그래프) - Get Upload Calendar
+*/
+export async function getUploadCalendar({
+  identifier,
+  style,
+  since,
+  until,
+  days,
+  tz,
+}: UploadCalendarParams) {
+  const { data } = await api.get<UploadCalendarResponse>(
+    IIDX_SCORES_UPLOAD_CALENDAR_URL,
+    { params: { identifier, style, since, until, days, tz } },
+  );
   return data;
 }

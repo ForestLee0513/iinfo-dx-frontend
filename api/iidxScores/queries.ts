@@ -9,9 +9,14 @@ import {
   createUploadToken,
   getScoreSummary,
   getSnapshots,
+  getUploadCalendar,
   restoreSnapshot,
 } from "./requests";
-import type { IidxPlayStyle, ScoreSummaryParams } from "./types";
+import type {
+  IidxPlayStyle,
+  ScoreSummaryParams,
+  UploadCalendarParams,
+} from "./types";
 
 /*
 쿼리 키 - Query Keys
@@ -24,6 +29,25 @@ export const iidxScoresKeys = {
   // 클리어 현황 요약은 조회 대상(identifier)·스타일·레벨 조합별로 캐시를 분리한다.
   summary: (identifier: string, style: IidxPlayStyle, level: number | undefined) =>
     [...iidxScoresKeys.all, "summary", identifier, style, level ?? "all"] as const,
+  // 기여도 그래프는 조회 대상(identifier)·스타일·조회 구간·타임존 조합별로 캐시를 분리한다.
+  uploadCalendar: (
+    identifier: string,
+    style: IidxPlayStyle | undefined,
+    since: string | undefined,
+    until: string | undefined,
+    days: number | undefined,
+    tz: string | undefined,
+  ) =>
+    [
+      ...iidxScoresKeys.all,
+      "uploadCalendar",
+      identifier,
+      style ?? "all",
+      since ?? "default",
+      until ?? "default",
+      days ?? "default",
+      tz ?? "UTC",
+    ] as const,
 };
 
 /*
@@ -88,6 +112,34 @@ export function useScoreSummaryQuery(
 ) {
   return useQuery({
     ...summaryQueryOptions({ ...params, identifier: params.identifier ?? "" }),
+    enabled: Boolean(params.identifier),
+  });
+}
+
+/*
+GET /api/v1/iidx/scores/upload-calendar
+날짜별 업로드 횟수 (기여도 그래프) - Get Upload Calendar
+*/
+export function uploadCalendarQueryOptions({
+  identifier,
+  style,
+  since,
+  until,
+  days,
+  tz,
+}: UploadCalendarParams) {
+  return queryOptions({
+    queryKey: iidxScoresKeys.uploadCalendar(identifier, style, since, until, days, tz),
+    queryFn: () => getUploadCalendar({ identifier, style, since, until, days, tz }),
+  });
+}
+
+// identifier가 아직 없으면(프로필 조회 전 등) 쿼리를 비활성화한다.
+export function useUploadCalendarQuery(
+  params: Omit<UploadCalendarParams, "identifier"> & { identifier: string | undefined },
+) {
+  return useQuery({
+    ...uploadCalendarQueryOptions({ ...params, identifier: params.identifier ?? "" }),
     enabled: Boolean(params.identifier),
   });
 }

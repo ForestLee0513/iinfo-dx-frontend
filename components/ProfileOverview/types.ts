@@ -47,6 +47,7 @@ export type HistoryEntry = {
 };
 
 // react-calendar-heatmap의 values 항목 — 날짜별 점수 갱신 횟수.
+// GET /api/v1/iidx/scores/upload-calendar 응답(UploadDayCount)을 변환해 채운다.
 export type ActivityHeatMapValue = {
   date: string;
   count: number;

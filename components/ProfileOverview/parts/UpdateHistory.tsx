@@ -6,12 +6,16 @@ import { UPDATE_HISTORY } from "../constants";
 import { ActivityHeatMap } from "./ActivityHeatMap";
 import { HistoryEntryCard } from "./HistoryEntryCard";
 
-export function UpdateHistory() {
+type UpdateHistoryProps = {
+  userId: string | undefined;
+};
+
+export function UpdateHistory({ userId }: UpdateHistoryProps) {
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex min-w-0 flex-col gap-4">
       <h3 className="text-lg font-semibold sm:text-xl">갱신 기록</h3>
 
-      <ActivityHeatMap />
+      <ActivityHeatMap userId={userId} />
 
       <div className="flex items-center gap-3">
         <span className="text-sm whitespace-nowrap">2026.06.26 (2건)</span>

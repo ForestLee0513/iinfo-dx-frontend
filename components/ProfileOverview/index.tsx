@@ -26,7 +26,7 @@ const CONTAINER_CLASS_NAME =
 // xl 미만에서는 단일 컬럼으로 쌓이고, xl 이상에서 프로필 정보가 좌측 사이드바로 분리된다.
 //
 // 프로필 조회/수정 API는 identity 영역(handle/DJ NAME·ID/소셜 링크/프로필 이미지)까지
-// 커버한다. 난이도 통계·클리어 램프 비율·갱신 기록은 대응하는 API가 아직 없어 목업을 유지한다.
+// 커버한다. 난이도 통계는 대응하는 API가 아직 없어 목업을 유지한다.
 export function ProfileOverview({ userId }: ProfileOverviewProps) {
   // 세션 복원(/refresh)이 끝나기 전에 조회하면 Authorization 없이 나가 is_mine이
   // 항상 false로 캐시된다 — AuthProvider 부트스트랩이 끝난 뒤에만 요청한다.
@@ -118,10 +118,13 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
           />
         </div>
 
-        <div className="flex flex-1 flex-col gap-10">
+        {/* min-w-0: flex 아이템의 기본 min-width는 auto라 내부 콘텐츠(기여도
+        히트맵 등)가 넓어지면 이 컬럼이 줄어들지 못하고 페이지 전체가 가로로
+        밀린다 — min-w-0으로 풀어야 내부 overflow-x-auto가 실제로 스크롤을 맡는다. */}
+        <div className="flex min-w-0 flex-1 flex-col gap-10">
           {/* <DifficultyProgress isOwnProfile={isOwnProfile} /> */}
           <ClearLampRatio userId={ready ? userId : undefined} />
-          <UpdateHistory />
+          <UpdateHistory userId={ready ? userId : undefined} />
         </div>
       </div>
     </div>
