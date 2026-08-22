@@ -1,26 +1,7 @@
-import type { ClearLampCounts } from "@/api/iidxScores/types";
 import type { ClearLampSegment, DifficultyStat, HistoryEntry } from "./types";
 
-// GET /api/v1/iidx/scores/summary 응답(counts/percentages)의 8종 표준 램프를
-// 클리어 램프 비율 카드에서 그릴 순서·라벨·색상으로 매핑한다.
-export const CLEAR_LAMP_META: {
-  key: keyof ClearLampCounts;
-  label: string;
-  swatchClassName: string;
-}[] = [
-  { key: "no_play", label: "NO PLAY", swatchClassName: "bg-gray-50" },
-  { key: "failed", label: "FAILED", swatchClassName: "bg-red-500" },
-  {
-    key: "assist_clear",
-    label: "ASSISTED EASY",
-    swatchClassName: "bg-violet-600",
-  },
-  { key: "easy_clear", label: "EASY", swatchClassName: "bg-green-500" },
-  { key: "clear", label: "NORMAL", swatchClassName: "bg-cyan-300" },
-  { key: "hard_clear", label: "HARD", swatchClassName: "bg-white" },
-  { key: "ex_hard_clear", label: "EX-HARD", swatchClassName: "bg-yellow-300" },
-  { key: "full_combo", label: "FULL COMBO", swatchClassName: "bg-blue-500" },
-];
+// 램프 색상 매핑은 iidxScores 도메인 소유 — 서열표 등 다른 화면과 공유한다.
+export { CLEAR_LAMP_META } from "@/api/iidxScores/constants";
 
 // 난이도 통계/집계 API가 아직 없어 Figma 목업과 동일한 값으로 화면만 먼저 채운다.
 export const DIFFICULTY_STATS: DifficultyStat[] = [

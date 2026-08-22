@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { IconHistory, IconLink } from "@tabler/icons-react";
+import { IconArrowsExchange, IconHistory, IconLink } from "@tabler/icons-react";
 
 import {
   Avatar,
@@ -48,10 +48,16 @@ export function ProfileIdentity({
           </h2>
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <span>
-              <span className="font-semibold text-foreground">{followersCount}</span> 팔로워
+              <span className="font-semibold text-foreground">
+                {followersCount}
+              </span>{" "}
+              팔로워
             </span>
             <span>
-              <span className="font-semibold text-foreground">{followingCount}</span> 팔로잉
+              <span className="font-semibold text-foreground">
+                {followingCount}
+              </span>{" "}
+              팔로잉
             </span>
           </div>
           <div className="space-y-0.5 text-sm text-muted-foreground">
@@ -76,7 +82,19 @@ export function ProfileIdentity({
         </div>
       </div>
       {isOwnProfile === false && (
-        <FollowButton identifier={identifier} isFollowing={isFollowing} />
+        <>
+          <FollowButton identifier={identifier} isFollowing={isFollowing} />
+          <Link
+            href={`/table/compare/${identifier}`}
+            className={buttonVariants({
+              variant: "outline",
+              className: "w-full justify-between sm:w-fit xl:w-full",
+            })}
+          >
+            서열표 비교하기
+            <IconArrowsExchange className="size-4" />
+          </Link>
+        </>
       )}
       {isOwnProfile && (
         <>
