@@ -2,7 +2,8 @@
 
 import { toast } from "sonner";
 
-import { Badge, Button } from "@forestlee0513/iinfo-dx-design-system";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 import type { IidxPlayStyle, SnapshotSummary } from "@/api/iidxScores/types";
 import { useRestoreSnapshotMutation } from "@/api/iidxScores/queries";

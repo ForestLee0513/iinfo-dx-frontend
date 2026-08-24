@@ -2,19 +2,10 @@
 
 import { useState } from "react";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Skeleton,
-  cn,
-} from "@forestlee0513/iinfo-dx-design-system";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 import { IIDX_PLAY_STYLE } from "@/api/iidxScores/constants";
 import { useScoreSummaryQuery } from "@/api/iidxScores/queries";

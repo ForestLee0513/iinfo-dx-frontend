@@ -1,12 +1,8 @@
 import Link from "next/link";
 import { IconArrowsExchange, IconHistory, IconLink } from "@tabler/icons-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  buttonVariants,
-} from "@forestlee0513/iinfo-dx-design-system";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { buttonVariants } from "@/components/ui/button";
 
 import type { OwnProfileSectionProps, ProfileSummary } from "../types";
 import { FollowButton } from "./FollowButton";

@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@forestlee0513/iinfo-dx-design-system";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { IIDX_PLAY_STYLE } from "@/api/iidxScores/constants";
 import { SnapshotList } from "./parts/SnapshotList";

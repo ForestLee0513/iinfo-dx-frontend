@@ -5,23 +5,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
-  Alert,
-  AlertDescription,
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
+} from "@/components/ui/card";
+import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-  Input,
-} from "@forestlee0513/iinfo-dx-design-system";
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 import { useQueryClient } from "@tanstack/react-query";
 

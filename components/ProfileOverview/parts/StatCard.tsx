@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@forestlee0513/iinfo-dx-design-system";
+import { Card, CardContent } from "@/components/ui/card";
 
 import type { DifficultyStat } from "../types";
 

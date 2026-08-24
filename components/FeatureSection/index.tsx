@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@forestlee0513/iinfo-dx-design-system";
+import { cn } from "@/lib/utils";
 
 import type { FeatureSectionProps } from "./types";
 

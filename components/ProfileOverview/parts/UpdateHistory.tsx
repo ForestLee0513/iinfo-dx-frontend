@@ -1,6 +1,7 @@
 import { IconPlus } from "@tabler/icons-react";
 
-import { Button, Separator } from "@forestlee0513/iinfo-dx-design-system";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 import { UPDATE_HISTORY } from "../constants";
 import { ActivityHeatMap } from "./ActivityHeatMap";

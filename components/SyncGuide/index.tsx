@@ -4,18 +4,10 @@ import Link from "next/link";
 import { IconCopy, IconHistory } from "@tabler/icons-react";
 import { toast } from "sonner";
 
-import {
-  Alert,
-  AlertDescription,
-  Button,
-  Card,
-  CardContent,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  buttonVariants,
-} from "@forestlee0513/iinfo-dx-design-system";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { UploadTokenField } from "./parts/UploadTokenField";
 

@@ -1,12 +1,7 @@
 "use client";
 
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-  Skeleton,
-} from "@forestlee0513/iinfo-dx-design-system";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import type { IidxPlayStyle } from "@/api/iidxScores/types";
 import { useSnapshotsQuery } from "@/api/iidxScores/queries";

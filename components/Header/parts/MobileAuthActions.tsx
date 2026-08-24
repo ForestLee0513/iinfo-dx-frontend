@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { IconChevronRight } from "@tabler/icons-react";
 
-import { Avatar, AvatarFallback, Button, Skeleton, buttonVariants } from "@forestlee0513/iinfo-dx-design-system";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { useLogoutMutation, useMyInfoQuery } from "@/api/auth/queries";
 import { useMobileMenu } from "../contexts/MobileMenuContext";

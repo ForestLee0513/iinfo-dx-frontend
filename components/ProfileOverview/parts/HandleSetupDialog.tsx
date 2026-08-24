@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { isAxiosError } from "axios";
 
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
-  Button,
   Dialog,
   DialogClose,
   DialogContent,
@@ -13,13 +13,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  Input,
-  buttonVariants,
-} from "@forestlee0513/iinfo-dx-design-system";
+} from "@/components/ui/dialog";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 import { useUpdateProfileMutation } from "@/api/profile/queries";
 

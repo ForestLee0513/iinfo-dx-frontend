@@ -1,4 +1,4 @@
-import { cn } from "@forestlee0513/iinfo-dx-design-system";
+import { cn } from "@/lib/utils";
 
 import { CLEAR_LAMP_META } from "@/api/iidxScores/constants";
 import type { BoardEntry } from "@/api/iidxTables/types";

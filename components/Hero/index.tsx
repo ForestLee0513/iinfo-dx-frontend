@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { IconArrowRight } from "@tabler/icons-react";
 
-import { buttonVariants, cn } from "@forestlee0513/iinfo-dx-design-system";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function Hero() {
   return (

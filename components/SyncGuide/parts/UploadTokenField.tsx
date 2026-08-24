@@ -1,6 +1,8 @@
 "use client";
 
-import { Button, Input, Label } from "@forestlee0513/iinfo-dx-design-system";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import { useCreateUploadTokenMutation } from "@/api/iidxScores/queries";
 

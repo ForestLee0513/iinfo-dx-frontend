@@ -2,12 +2,8 @@
 
 import { isAxiosError } from "axios";
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Skeleton,
-} from "@forestlee0513/iinfo-dx-design-system";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { useIidxProfileQuery, useProfileQuery } from "@/api/profile/queries";
 import { useAuthReady } from "@/providers/AuthReadyContext";

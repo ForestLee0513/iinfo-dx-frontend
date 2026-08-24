@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@forestlee0513/iinfo-dx-design-system";
+} from "@/components/ui/card";
 
 export default function SignUpPage() {
   return (

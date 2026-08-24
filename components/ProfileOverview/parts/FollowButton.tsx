@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { IconCheck, IconPlus } from "@tabler/icons-react";
 
-import { Button, buttonVariants } from "@forestlee0513/iinfo-dx-design-system";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 import { useToggleFollowMutation } from "@/api/profile/queries";
 

@@ -4,9 +4,9 @@ import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
-  Button,
-  Separator,
   Sheet,
   SheetClose,
   SheetContent,
@@ -14,8 +14,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  buttonVariants,
-} from "@forestlee0513/iinfo-dx-design-system";
+} from "@/components/ui/sheet";
 
 import { MobileMenuContext } from "./contexts/MobileMenuContext";
 import { DesktopAuthActions } from "./parts/DesktopAuthActions";
