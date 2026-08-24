@@ -4,7 +4,7 @@ import { useState } from "react";
 import { isAxiosError } from "axios";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -15,7 +15,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
 import { useUpdateProfileMutation } from "@/api/profile/queries";
@@ -105,10 +110,7 @@ export function ProfileEditDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger
-        className={buttonVariants({
-          variant: "outline",
-          className: "w-full justify-between sm:w-fit xl:w-full",
-        })}
+        render={<Button variant="outline" className="w-full justify-between" />}
       >
         프로필 수정
         <IconPencil className="size-4" />

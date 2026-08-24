@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { isAxiosError } from "axios";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -68,7 +68,7 @@ export function HandleSetupDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger className={buttonVariants()}>{triggerLabel}</DialogTrigger>
+      <DialogTrigger render={<Button />}>{triggerLabel}</DialogTrigger>
       <DialogContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <DialogHeader>

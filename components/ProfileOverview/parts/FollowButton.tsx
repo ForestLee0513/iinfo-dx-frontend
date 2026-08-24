@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { IconCheck, IconPlus } from "@tabler/icons-react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 import { useToggleFollowMutation } from "@/api/profile/queries";
 
@@ -21,10 +21,15 @@ export function FollowButton({ identifier, isFollowing }: FollowButtonProps) {
   // 비로그인 사용자는 팔로우할 수 없어 로그인 페이지로 안내한다.
   if (isFollowing === null) {
     return (
-      <Link href="/login" className={buttonVariants({ variant: "outline", className: BUTTON_CLASS_NAME })}>
+      <Button
+        variant="outline"
+        className={BUTTON_CLASS_NAME}
+        nativeButton={false}
+        render={<Link href="/login" />}
+      >
         팔로우
         <IconPlus className="size-4" />
-      </Link>
+      </Button>
     );
   }
 

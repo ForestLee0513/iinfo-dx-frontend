@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
@@ -55,7 +55,7 @@ export function Header() {
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger
               aria-label="메뉴 열기"
-              className={buttonVariants({ variant: "outline", size: "icon" })}
+              render={<Button variant="outline" size="icon" />}
             >
               <IconMenu2 className="size-5" />
             </SheetTrigger>

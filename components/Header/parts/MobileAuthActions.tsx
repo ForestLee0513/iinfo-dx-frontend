@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { IconChevronRight } from "@tabler/icons-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useLogoutMutation, useMyInfoQuery } from "@/api/auth/queries";
@@ -32,20 +32,21 @@ export function MobileAuthActions() {
   if (!myInfo.data) {
     return (
       <div className="flex gap-2">
-        <Link
-          href="/login"
-          onClick={close}
-          className={buttonVariants({ variant: "outline", className: "flex-1" })}
+        <Button
+          variant="outline"
+          className="flex-1"
+          nativeButton={false}
+          render={<Link href="/login" onClick={close} />}
         >
           로그인
-        </Link>
-        <Link
-          href="/sign-up"
-          onClick={close}
-          className={buttonVariants({ className: "flex-1" })}
+        </Button>
+        <Button
+          className="flex-1"
+          nativeButton={false}
+          render={<Link href="/sign-up" onClick={close} />}
         >
           회원가입
-        </Link>
+        </Button>
       </div>
     );
   }
