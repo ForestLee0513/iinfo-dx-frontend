@@ -12,6 +12,13 @@ function getSwatchClassName(clearLamp: string | null | undefined) {
     ?.swatchClassName;
 }
 
+// dj_level(등급)이 없는 경우(FAILED 등급 미부여 등)도 있어 "NO PLAY"로 단정할 수 없다 —
+// 실제 clear_lamp 기준 라벨로 대체한다.
+function getClearLampLabel(clearLamp: string | null | undefined) {
+  return CLEAR_LAMP_META.find(({ key }) => key === (clearLamp ?? NO_PLAY_LAMP))
+    ?.label;
+}
+
 type RankEntryRowProps = {
   entry: BoardEntry;
   // 비로그인 미리보기 — 클리어 램프는 개인 성적이라 로그인해야만 보여준다.
@@ -26,7 +33,7 @@ export function RankEntryRow({
 }: RankEntryRowProps) {
   const scoreLine = !showLamp
     ? `${entry.difficulty}${entry.level ? ` Lv.${entry.level}` : ""}`
-    : `${entry.score?.dj_level ?? "NO PLAY"}${
+    : `${entry.score?.dj_level ?? getClearLampLabel(entry.score?.clear_lamp)}${
         entry.score?.ex_score != null ? ` ${entry.score.ex_score}` : ""
       } | 마지막 플레이: ${formatPlayedDate(entry.score?.last_played_at)}`;
 
