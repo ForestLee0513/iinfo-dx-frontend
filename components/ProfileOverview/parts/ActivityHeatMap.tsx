@@ -8,7 +8,13 @@ import type {
 } from "react";
 import CalendarHeatmap from "react-calendar-heatmap";
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useUploadCalendarQuery } from "@/api/iidxScores/queries";
@@ -243,7 +249,7 @@ export function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
       {hoveredCell && (
         <div
           className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-[calc(100%+8px)]
-            rounded-md border bg-popover px-2 py-1 text-xs whitespace-nowrap text-popover-foreground shadow-md"
+            rounded-md border bg-popover px-2 py-1 text-xs whitespace-nowrap text-popover-foreground shadow-sm"
           style={{ left: hoveredCell.x, top: hoveredCell.y }}
         >
           {`${hoveredCell.value.date} · ${hoveredCell.value.count}건`}
