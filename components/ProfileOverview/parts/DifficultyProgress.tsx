@@ -1,4 +1,4 @@
-import { Button } from "@example-owner/iinfo-dx-design-system";
+import { Button } from "@/components/ui/button";
 
 import { DIFFICULTY_STATS } from "../constants";
 import type { OwnProfileSectionProps } from "../types";

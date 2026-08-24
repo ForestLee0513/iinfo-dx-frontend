@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { IconDatabaseX } from "@tabler/icons-react";
 
-import { buttonVariants } from "@example-owner/iinfo-dx-design-system";
+import { buttonVariants } from "@/components/ui/button";
 
 export function IidxOnboardingBanner() {
   return (

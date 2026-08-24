@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Skeleton } from "@example-owner/iinfo-dx-design-system";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { useTableBoardQuery, useTablesQuery } from "@/api/iidxTables/queries";
 import { useAuthReady } from "@/providers/AuthReadyContext";

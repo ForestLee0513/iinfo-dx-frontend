@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { cn } from "@example-owner/iinfo-dx-design-system";
+import { cn } from "@/lib/utils";
 
 import { NAV_ITEMS } from "../constants";
 

@@ -1,5 +1,5 @@
 "use client";
-import { cn } from "@example-owner/iinfo-dx-design-system";
+import { cn } from "@/lib/utils";
 
 import { CLEAR_LAMP_SEGMENTS } from "../constants";
 import type { HistoryEntry } from "../types";

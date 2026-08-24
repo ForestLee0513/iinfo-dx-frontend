@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 
 import type { Metadata } from "next";
 import { pretendard, pretendardJP } from "@/styles/fonts";
-import { Toaster } from "@example-owner/iinfo-dx-design-system";
+import { Toaster } from "@/components/ui/sonner";
 
 import { Header } from "@/components/Header";
 import { AuthProvider } from "@/providers/AuthProvider";

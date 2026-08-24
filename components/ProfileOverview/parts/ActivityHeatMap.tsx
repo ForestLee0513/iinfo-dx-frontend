@@ -8,14 +8,8 @@ import type {
 } from "react";
 import CalendarHeatmap from "react-calendar-heatmap";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Skeleton,
-} from "@example-owner/iinfo-dx-design-system";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { useUploadCalendarQuery } from "@/api/iidxScores/queries";
 import type { ActivityHeatMapValue } from "../types";
