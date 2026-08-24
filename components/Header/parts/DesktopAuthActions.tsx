@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,12 +31,17 @@ export function DesktopAuthActions() {
   if (!myInfo.data) {
     return (
       <div className="flex items-center gap-2">
-        <Link href="/login" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+        <Button
+          variant="ghost"
+          size="sm"
+          nativeButton={false}
+          render={<Link href="/login" />}
+        >
           로그인
-        </Link>
-        <Link href="/sign-up" className={buttonVariants({ size: "sm" })}>
+        </Button>
+        <Button size="sm" nativeButton={false} render={<Link href="/sign-up" />}>
           회원가입
-        </Link>
+        </Button>
       </div>
     );
   }

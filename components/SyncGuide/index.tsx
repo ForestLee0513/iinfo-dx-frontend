@@ -5,7 +5,7 @@ import { IconCopy, IconHistory } from "@tabler/icons-react";
 import { toast } from "sonner";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -26,13 +26,15 @@ export function SyncGuide() {
           갱신하기
         </h1>
         {/* 지난 성적 스냅샷으로 복구하는 페이지로 이동 */}
-        <Link
-          href="/restore"
-          className={buttonVariants({ variant: "outline", size: "sm" })}
+        <Button
+          variant="outline"
+          size="sm"
+          nativeButton={false}
+          render={<Link href="/restore" />}
         >
           <IconHistory className="size-4" />
           복구하기
-        </Link>
+        </Button>
       </div>
 
       <Tabs defaultValue="pc" className="mt-4">

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { IconDatabaseX } from "@tabler/icons-react";
 
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 export function IidxOnboardingBanner() {
   return (
@@ -26,9 +26,9 @@ export function IidxOnboardingBanner() {
         </div>
 
         <div>
-          <Link href="/sync" className={buttonVariants()}>
+          <Button nativeButton={false} render={<Link href="/sync" />}>
             갱신하러 가기
-          </Link>
+          </Button>
         </div>
       </div>
     </div>

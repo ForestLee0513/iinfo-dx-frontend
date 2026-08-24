@@ -2,7 +2,7 @@ import Link from "next/link";
 import { IconArrowsExchange, IconHistory, IconLink } from "@tabler/icons-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 import type { OwnProfileSectionProps, ProfileSummary } from "../types";
 import { FollowButton } from "./FollowButton";
@@ -80,16 +80,15 @@ export function ProfileIdentity({
       {isOwnProfile === false && (
         <>
           <FollowButton identifier={identifier} isFollowing={isFollowing} />
-          <Link
-            href={`/table/compare/${identifier}`}
-            className={buttonVariants({
-              variant: "outline",
-              className: "w-full justify-between sm:w-fit xl:w-full",
-            })}
+          <Button
+            variant="outline"
+            className="w-full justify-between"
+            nativeButton={false}
+            render={<Link href={`/table/compare/${identifier}`} />}
           >
             서열표 비교하기
             <IconArrowsExchange className="size-4" />
-          </Link>
+          </Button>
         </>
       )}
       {isOwnProfile && (
@@ -100,16 +99,15 @@ export function ProfileIdentity({
             socialLinks={socialLinks}
           />
           {/* 본인 프로필에서만 노출 — 지난 성적 스냅샷으로 복구하는 페이지로 이동 */}
-          <Link
-            href="/restore"
-            className={buttonVariants({
-              variant: "outline",
-              className: "w-full justify-between sm:w-fit xl:w-full",
-            })}
+          <Button
+            variant="outline"
+            className="w-full justify-between"
+            nativeButton={false}
+            render={<Link href="/restore" />}
           >
             복구하기
             <IconHistory className="size-4" />
-          </Link>
+          </Button>
         </>
       )}
     </div>

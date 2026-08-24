@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { IconArrowRight } from "@tabler/icons-react";
 
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export function Hero() {
   return (
@@ -30,13 +29,15 @@ export function Hero() {
         에 동의한 것으로 간주됩니다.
       </p>
 
-      <Link
-        href="/login"
-        className={cn(buttonVariants({ size: "lg" }), "gap-2")}
+      <Button
+        size="lg"
+        className="gap-2"
+        nativeButton={false}
+        render={<Link href="/login" />}
       >
         시작하기
         <IconArrowRight className="size-4" />
-      </Link>
+      </Button>
     </section>
   );
 }
