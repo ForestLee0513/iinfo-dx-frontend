@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { useLogoutMutation, useMyInfoQuery } from "@/api/auth/queries";
 import { useMobileMenu } from "../contexts/MobileMenuContext";
-import { getProfileHref } from "../constants";
+import { getProfileHref, SETTINGS_HREF } from "../constants";
 
 // 로그인은 이동과 동시에 사이드바를 닫고,
 // 로그아웃은 요청이 성공한 뒤에 닫는다(실패 시엔 열어둬 재시도할 수 있게).
@@ -60,6 +60,14 @@ export function MobileAuthActions() {
           <span className="truncate text-xs text-muted-foreground">{myInfo.data.email}</span>
         </div>
         <IconChevronRight className="size-4 shrink-0 text-muted-foreground" />
+      </Link>
+      <Link
+        href={SETTINGS_HREF}
+        onClick={close}
+        className="-mx-2 flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+      >
+        설정
+        <IconChevronRight className="ml-auto size-4 shrink-0 text-muted-foreground" />
       </Link>
       <Button
         variant="outline"

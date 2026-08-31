@@ -17,7 +17,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useLogoutMutation, useMyInfoQuery } from "@/api/auth/queries";
-import { getProfileHref } from "../constants";
+import { getProfileHref, SETTINGS_HREF } from "../constants";
 
 export function DesktopAuthActions() {
   const router = useRouter();
@@ -58,6 +58,7 @@ export function DesktopAuthActions() {
           <DropdownMenuItem render={<Link href={getProfileHref(myInfo.data.id)} />}>
             프로필
           </DropdownMenuItem>
+          <DropdownMenuItem render={<Link href={SETTINGS_HREF} />}>설정</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
