@@ -22,7 +22,7 @@ import { DesktopNav } from "./parts/DesktopNav";
 import { MobileAuthActions } from "./parts/MobileAuthActions";
 import { MobileNav } from "./parts/MobileNav";
 
-// shadcn 사이트 헤더 형태(로고 + 텍스트 네비 + 로그인/회원가입, 모바일은 Sheet)를 따른 전 페이지 공통 상단 바.
+// shadcn 사이트 헤더 형태(로고 + 텍스트 네비 + 로그인, 모바일은 Sheet)를 따른 전 페이지 공통 상단 바.
 export function Header() {
   // 모바일 Sheet는 로그아웃 완료 시점처럼 SheetClose로 다룰 수 없는 닫기가 있어 제어 컴포넌트로 둔다.
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

@@ -30,19 +30,9 @@ export function DesktopAuthActions() {
 
   if (!myInfo.data) {
     return (
-      <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          nativeButton={false}
-          render={<Link href="/login" />}
-        >
-          로그인
-        </Button>
-        <Button size="sm" nativeButton={false} render={<Link href="/sign-up" />}>
-          회원가입
-        </Button>
-      </div>
+      <Button size="sm" nativeButton={false} render={<Link href="/login" />}>
+        로그인
+      </Button>
     );
   }
 

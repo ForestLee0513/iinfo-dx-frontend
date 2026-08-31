@@ -12,7 +12,7 @@ import { useLogoutMutation, useMyInfoQuery } from "@/api/auth/queries";
 import { useMobileMenu } from "../contexts/MobileMenuContext";
 import { getProfileHref } from "../constants";
 
-// 로그인/회원가입은 이동과 동시에 사이드바를 닫고,
+// 로그인은 이동과 동시에 사이드바를 닫고,
 // 로그아웃은 요청이 성공한 뒤에 닫는다(실패 시엔 열어둬 재시도할 수 있게).
 export function MobileAuthActions() {
   const router = useRouter();
@@ -31,23 +31,13 @@ export function MobileAuthActions() {
 
   if (!myInfo.data) {
     return (
-      <div className="flex gap-2">
-        <Button
-          variant="outline"
-          className="flex-1"
-          nativeButton={false}
-          render={<Link href="/login" onClick={close} />}
-        >
-          로그인
-        </Button>
-        <Button
-          className="flex-1"
-          nativeButton={false}
-          render={<Link href="/sign-up" onClick={close} />}
-        >
-          회원가입
-        </Button>
-      </div>
+      <Button
+        className="w-full"
+        nativeButton={false}
+        render={<Link href="/login" onClick={close} />}
+      >
+        로그인
+      </Button>
     );
   }
 
