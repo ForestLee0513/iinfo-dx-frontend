@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 import { useToggleFollowMutation } from "@/api/profile/queries";
 
-const BUTTON_CLASS_NAME = "w-full justify-between sm:w-fit xl:w-full";
+const BUTTON_CLASS_NAME = "w-full justify-between";
 
 type FollowButtonProps = {
   identifier: string;
@@ -41,7 +41,11 @@ export function FollowButton({ identifier, isFollowing }: FollowButtonProps) {
       onClick={() => toggleFollow.mutate(!isFollowing)}
     >
       {isFollowing ? "팔로잉" : "팔로우"}
-      {isFollowing ? <IconCheck className="size-4" /> : <IconPlus className="size-4" />}
+      {isFollowing ? (
+        <IconCheck className="size-4" />
+      ) : (
+        <IconPlus className="size-4" />
+      )}
     </Button>
   );
 }
