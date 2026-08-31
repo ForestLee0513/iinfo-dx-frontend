@@ -8,7 +8,7 @@ type ComparisonSummaryProps = {
 export function ComparisonSummary({ opponent, comparison }: ComparisonSummaryProps) {
   const opponentLabel = opponent.handle
     ? `@${opponent.handle}${opponent.dj_name ? `(${opponent.dj_name})` : ""}`
-    : (opponent.dj_name ?? "상대");
+    : (opponent.nickname ?? opponent.dj_name ?? "상대");
 
   const { win_rate: winRate } = comparison;
   const resultText =

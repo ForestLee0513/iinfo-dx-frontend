@@ -36,6 +36,7 @@ export interface TableBoardParams {
 export interface BoardUser {
   user_id: string;
   handle: string | null;
+  nickname: string | null;
   dj_name: string | null;
 }
 

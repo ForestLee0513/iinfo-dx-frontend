@@ -21,15 +21,17 @@ GET /api/v1/profile/{identifier}
 - is_public=false인 비공개 프로필은 본인만 조회 가능 — 그 외엔 404로 존재 자체를 감춘다.
 - 요청 토큰의 sub가 조회된 user_id와 같을 때만 is_mine=true와 함께 email/provider가 채워진다.
 - is_following은 로그인한 타인이 볼 때만 값이 채워진다(익명/본인 조회는 null).
+
+서비스 전용 필드(dj_name/dj_id 등)는 포함하지 않는다. 서비스 프로필이 필요하면
+/profile/{service}/{identifier} 엔드포인트(예: IidxProfileResponse)를 사용할 것.
 */
 export interface ProfileResponse {
   id: string;
-  handle: string | null;
+  handle: string | null; // 고유 식별자 — 다른 사용자와 중복 불가
+  nickname: string | null; // 표시용 닉네임 — 다른 사용자와 중복 가능
   role: ProfileUserRole; // default: "USER"
   is_public: boolean; // default: true
   social_links: SocialLink[];
-  dj_name: string | null;
-  dj_id: string | null;
   profile_image_url: string | null;
   updated_at: string | null;
   is_mine: boolean; // default: false
@@ -38,6 +40,7 @@ export interface ProfileResponse {
   followers_count: number; // default: 0
   following_count: number; // default: 0
   is_following: boolean | null; // 로그인 사용자의 팔로우 여부 — 미로그인/본인 조회 시 null
+  joined_services: string[]; // 온보딩을 완료한 서비스 목록 (예: ["iidx"])
 }
 
 /*
@@ -52,15 +55,19 @@ DELETE /api/v1/profile/{identifier}/follow
 
 /*
 PATCH /api/v1/profile/me
-내 프로필 수정 (handle/social_links) - Update My Profile
+내 프로필 수정 (handle/nickname/social_links/is_public) - Update My Profile
 
 본문에 없는 필드는 그대로 유지된다(부분 업데이트). handle을 null로 보내면 핸들을
-해제하고, 이미 다른 사용자가 쓰는 handle이면 409. social_links는 보낸 배열로
-통째로 치환된다(부분 추가/삭제가 아님).
+해제하고, 이미 다른 사용자가 쓰는 handle이면 409. nickname은 handle과 달리
+유일하지 않아도 되는 일반 표시용 닉네임이라 다른 사용자와 중복돼도 409 없이
+그대로 저장되며, null로 보내면 닉네임을 해제한다. social_links는 보낸 배열로
+통째로 치환된다(부분 추가/삭제가 아님). is_public은 프로필 공개 여부를 전환한다.
 */
 export interface ProfileUpdateRequest {
   handle?: string | null;
+  nickname?: string | null;
   social_links?: SocialLink[] | null;
+  is_public?: boolean | null;
 }
 
 /*
@@ -78,6 +85,7 @@ export interface FollowListParams {
 export interface FollowUserSummary {
   id: string;
   handle: string | null;
+  nickname: string | null;
   profile_image_url: string | null;
 }
 
@@ -98,6 +106,13 @@ IIDX 서비스 프로필 조회 - Get IIDX Profile
 */
 export interface IidxProfileResponse extends ProfileResponse {
   iidx_is_public: boolean; // default: true
+  dj_name: string | null;
+  dj_id: string | null;
+  community_nickname: string | null; // IIDX 커뮤니티(크롤링 원본)에서 가져온 닉네임 — nickname과 별개로 중복 가능
+  play_count: number | null;
+  notes_radar: Record<string, unknown> | null;
+  dan: Record<string, unknown> | null;
+  arena_class: Record<string, unknown> | null;
 }
 
 /*
