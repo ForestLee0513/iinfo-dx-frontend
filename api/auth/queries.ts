@@ -6,7 +6,14 @@ import {
 } from "@tanstack/react-query";
 
 import { useAuthReady } from "@/providers/AuthReadyContext";
-import { getMyInfo, loginWithEmail, logout, refreshSession, signUp } from "./requests";
+import {
+  getMyInfo,
+  loginWithEmail,
+  logout,
+  refreshSession,
+  signUp,
+  withdrawAccount,
+} from "./requests";
 import type { AuthLoginResponse, AuthMyInfoResponse } from "./types";
 
 /*
@@ -112,6 +119,21 @@ export function useLogoutMutation() {
 
   return useMutation({
     mutationFn: logout,
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: authKeys.all });
+    },
+  });
+}
+
+/*
+DELETE /api/v1/auth/me
+회원 탈퇴 (계정 영구 삭제) - Withdraw
+*/
+export function useWithdrawAccountMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: withdrawAccount,
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: authKeys.all });
     },

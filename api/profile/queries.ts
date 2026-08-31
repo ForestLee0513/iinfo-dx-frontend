@@ -14,6 +14,7 @@ import {
   unfollowUser,
   updateIidxProfile,
   updateProfile,
+  withdrawIidxProfile,
 } from "./requests";
 import type {
   FollowListParams,
@@ -159,6 +160,34 @@ export function useUpdateIidxProfileMutation(identifier: string) {
     mutationFn: (body: IidxProfileUpdateRequest) => updateIidxProfile(body),
     onSuccess: (data) => {
       seedIidxProfile(queryClient, identifier, data);
+    },
+  });
+}
+
+/*
+DELETE /api/v1/profile/iidx/me
+IIDX 서비스 탈퇴 (서비스 데이터 삭제, 계정은 유지) - Withdraw Iidx Profile
+
+IIDX 프로필 캐시는 완전히 비우고(온보딩 이전 상태로), base 프로필 캐시의
+joined_services에서 "iidx"만 제거한다 — 204라 갱신된 프로필을 다시 내려주지 않는다.
+*/
+export function useWithdrawIidxProfileMutation(identifier: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: withdrawIidxProfile,
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: iidxProfileKeys.detail(identifier) });
+      queryClient.setQueryData<ProfileResponse>(profileKeys.detail(identifier), (prev) =>
+        prev
+          ? {
+              ...prev,
+              joined_services: prev.joined_services.filter(
+                (service) => service !== "iidx",
+              ),
+            }
+          : prev,
+      );
     },
   });
 }

@@ -84,3 +84,11 @@ export async function updateIidxProfile(body: IidxProfileUpdateRequest) {
   const { data } = await api.patch<IidxProfileResponse>(PROFILE_IIDX_ME_BASE, body);
   return data;
 }
+
+/*
+DELETE /api/v1/profile/iidx/me
+IIDX 서비스 탈퇴 (서비스 데이터 삭제, 계정은 유지) - Withdraw Iidx Profile
+*/
+export async function withdrawIidxProfile() {
+  await api.delete(PROFILE_IIDX_ME_BASE);
+}
