@@ -94,3 +94,13 @@ export async function logout() {
   await api.post(`${AUTH_BASE}/logout`);
   setAccessToken(null);
 }
+
+/*
+DELETE /api/v1/auth/me
+회원 탈퇴 (계정 영구 삭제) - Withdraw
+성공 시 서버가 refresh 쿠키를 함께 제거한다
+*/
+export async function withdrawAccount() {
+  await api.delete(`${AUTH_BASE}/me`);
+  setAccessToken(null);
+}
