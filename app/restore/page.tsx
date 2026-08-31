@@ -1,4 +1,4 @@
-import { SnapshotRestore } from "@/components/SnapshotRestore";
+import { SnapshotRestore } from "@/components/screens/SnapshotRestore";
 
 export default function RestorePage() {
   return <SnapshotRestore />;

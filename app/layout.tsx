@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { pretendard, pretendardJP } from "@/styles/fonts";
 import { Toaster } from "@/components/ui/sonner";
 
-import { Header } from "@/components/Header";
+import { Header } from "@/components/common/Header";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { QueryProvider } from "@/providers/QueryProvider";
 
