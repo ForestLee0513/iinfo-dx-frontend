@@ -124,7 +124,7 @@ export function useFollowingQuery(
 
 /*
 PATCH /api/v1/profile/me
-내 프로필 수정 (handle/social_links) - Update My Profile
+내 프로필 수정 (handle/nickname/social_links/is_public) - Update My Profile
 
 identifier는 현재 조회 중인 프로필의 쿼리 키(useProfileQuery에 넘긴 값과 동일해야
 한다) — 저장 성공 시 그 캐시만 갱신한다. me API 응답이라 다른 identifier(예: 변경
@@ -137,8 +137,9 @@ export function useUpdateProfileMutation(identifier: string) {
     mutationFn: updateProfile,
     onSuccess: (data) => {
       seedProfile(queryClient, identifier, data);
-      // IIDX 서비스 프로필 캐시가 이미 있으면 플랫폼 필드를 병합한다.
-      // ProfileResponse가 IidxProfileResponse의 부분집합이므로 iidx_is_public은 기존 값을 보존한다.
+      // IIDX 서비스 프로필 캐시가 이미 있으면 플랫폼 필드(handle/nickname 등)만 병합한다.
+      // data(ProfileResponse)에 없는 서비스 전용 필드(dj_name/dj_id/iidx_is_public 등)는
+      // 스프레드로 기존 값이 그대로 보존된다.
       queryClient.setQueryData<IidxProfileResponse>(
         iidxProfileKeys.detail(identifier),
         (prev) => (prev ? { ...prev, ...data } : prev),

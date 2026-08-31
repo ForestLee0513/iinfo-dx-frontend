@@ -52,16 +52,19 @@ function getErrorMessage(error: unknown) {
 type ProfileEditDialogProps = {
   identifier: string;
   handle: string | null;
+  nickname: string | null;
   socialLinks: SocialLink[];
 };
 
 export function ProfileEditDialog({
   identifier,
   handle,
+  nickname,
   socialLinks,
 }: ProfileEditDialogProps) {
   const [open, setOpen] = useState(false);
   const [handleValue, setHandleValue] = useState(handle ?? "");
+  const [nicknameValue, setNicknameValue] = useState(nickname ?? "");
   const [links, setLinks] = useState<SocialLink[]>(socialLinks);
   const updateProfile = useUpdateProfileMutation(identifier);
 
@@ -69,6 +72,7 @@ export function ProfileEditDialog({
   function handleOpenChange(nextOpen: boolean) {
     if (nextOpen) {
       setHandleValue(handle ?? "");
+      setNicknameValue(nickname ?? "");
       setLinks(socialLinks);
       updateProfile.reset();
     }
@@ -93,6 +97,7 @@ export function ProfileEditDialog({
     event.preventDefault();
 
     const trimmedHandle = handleValue.trim();
+    const trimmedNickname = nicknameValue.trim();
     // 플랫폼/URL 중 하나라도 비어 있는 행은 저장하지 않는다.
     const trimmedLinks = links
       .map((link) => ({ platform: link.platform.trim(), url: link.url.trim() }))
@@ -101,6 +106,7 @@ export function ProfileEditDialog({
     updateProfile.mutate(
       {
         handle: trimmedHandle || null,
+        nickname: trimmedNickname || null,
         social_links: trimmedLinks,
       },
       { onSuccess: () => setOpen(false) },
@@ -120,7 +126,7 @@ export function ProfileEditDialog({
           <DialogHeader className="shrink-0">
             <DialogTitle>프로필 수정</DialogTitle>
             <DialogDescription>
-              핸들과 소셜 링크를 변경할 수 있습니다.
+              핸들, 닉네임, 소셜 링크를 변경할 수 있습니다.
             </DialogDescription>
           </DialogHeader>
 
@@ -132,6 +138,17 @@ export function ProfileEditDialog({
                 value={handleValue}
                 onChange={(event) => setHandleValue(event.target.value)}
                 placeholder="예: username"
+                maxLength={30}
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="profile-edit-nickname">닉네임</FieldLabel>
+              <Input
+                id="profile-edit-nickname"
+                value={nicknameValue}
+                onChange={(event) => setNicknameValue(event.target.value)}
+                placeholder="예: 홍길동"
                 maxLength={30}
               />
             </Field>

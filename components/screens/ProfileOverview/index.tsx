@@ -21,8 +21,8 @@ const CONTAINER_CLASS_NAME =
 // Figma 프로필 화면(1920/1280/320 너비 목업)을 하나의 반응형 레이아웃으로 구현한다.
 // xl 미만에서는 단일 컬럼으로 쌓이고, xl 이상에서 프로필 정보가 좌측 사이드바로 분리된다.
 //
-// 프로필 조회/수정 API는 identity 영역(handle/DJ NAME·ID/소셜 링크/프로필 이미지)까지
-// 커버한다. 난이도 통계는 대응하는 API가 아직 없어 목업을 유지한다.
+// 프로필 조회/수정 API는 identity 영역(handle/nickname/DJ NAME·ID/소셜 링크/프로필
+// 이미지)까지 커버한다. 난이도 통계는 대응하는 API가 아직 없어 목업을 유지한다.
 export function ProfileOverview({ userId }: ProfileOverviewProps) {
   // 세션 복원(/refresh)이 끝나기 전에 조회하면 Authorization 없이 나가 is_mine이
   // 항상 false로 캐시된다 — AuthProvider 부트스트랩이 끝난 뒤에만 요청한다.
@@ -103,6 +103,7 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
           <ProfileIdentity
             identifier={userId}
             handle={profile.data.handle}
+            nickname={profile.data.nickname}
             djName={profile.data.dj_name}
             djId={profile.data.dj_id}
             socialLinks={profile.data.social_links}

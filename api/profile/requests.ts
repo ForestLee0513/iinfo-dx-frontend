@@ -20,7 +20,7 @@ export async function getProfile(identifier: string) {
 
 /*
 PATCH /api/v1/profile/me
-내 프로필 수정 (handle/social_links) - Update My Profile
+내 프로필 수정 (handle/nickname/social_links/is_public) - Update My Profile
 */
 export async function updateProfile(body: ProfileUpdateRequest) {
   const { data } = await api.patch<ProfileResponse>(PROFILE_ME_BASE, body);

@@ -11,6 +11,7 @@ import { ProfileEditDialog } from "./ProfileEditDialog";
 export function ProfileIdentity({
   identifier,
   handle,
+  nickname,
   djName,
   djId,
   socialLinks,
@@ -20,7 +21,7 @@ export function ProfileIdentity({
   followingCount,
   isOwnProfile,
 }: ProfileSummary & OwnProfileSectionProps) {
-  const initial = (handle ?? djName ?? "?")
+  const initial = (handle ?? nickname ?? djName ?? "?")
     .replace(/^@/, "")
     .charAt(0)
     .toUpperCase();
@@ -33,15 +34,18 @@ export function ProfileIdentity({
           {profileImageUrl && (
             <AvatarImage
               src={profileImageUrl}
-              alt={handle ?? "프로필 이미지"}
+              alt={nickname ?? handle ?? "프로필 이미지"}
             />
           )}
           <AvatarFallback className="text-2xl">{initial}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-semibold sm:text-2xl">
-            {handle ? `@${handle}` : "핸들 미설정"}
+            {nickname ?? (handle ? `@${handle}` : "닉네임 미설정")}
           </h2>
+          {handle && (
+            <p className="text-sm text-muted-foreground">@{handle}</p>
+          )}
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <span>
               <span className="font-semibold text-foreground">
@@ -96,6 +100,7 @@ export function ProfileIdentity({
           <ProfileEditDialog
             identifier={identifier}
             handle={handle}
+            nickname={nickname}
             socialLinks={socialLinks}
           />
           {/* 본인 프로필에서만 노출 — 지난 성적 스냅샷으로 복구하는 페이지로 이동 */}
