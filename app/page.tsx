@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-import { FeatureSection } from "@/components/FeatureSection";
-import { Hero } from "@/components/Hero";
+import { FeatureSection } from "@/components/screens/FeatureSection";
+import { Hero } from "@/components/screens/Hero";
 
 const FEATURES = [
   {

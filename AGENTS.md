@@ -83,7 +83,18 @@ Keep `app/` limited to what is **directly tied to a route**. Provider setup, glo
 
 ## `components/` — feature-scoped UI
 
-One folder per feature component, **one component per file**, split by concern. A simple component starts flat (`components/UserInfoCard.tsx`); when it grows, promote it to a folder:
+Three top-level groups, split by scope:
+
+```
+📂components
+ ┣ 📂ui       # shadcn/ui primitives (generated via shadcn CLI) — don't hand-roll variants here beyond what the CLI emits
+ ┣ 📂screens  # one-route components — the bulk of a page's UI, imported by exactly one app/ page.tsx
+ ┗ 📂common   # cross-route components — shared chrome or wrappers imported by more than one page.tsx (e.g. Header, AuthGuard)
+```
+
+A component moves from `screens/` to `common/` the moment a second route imports it — not before.
+
+Within `screens/` and `common/`, one folder per feature component, **one component per file**, split by concern. A simple component starts flat (`components/screens/UserInfoCard.tsx`); when it grows, promote it to a folder:
 
 ```
 📂components/<Name>
