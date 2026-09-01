@@ -4,8 +4,6 @@ export type ProfileSummary = {
   identifier: string; // useProfileQuery에 넘긴 값과 동일 — 프로필 수정 성공 시 캐시 갱신 키로 쓰인다.
   handle: string | null;
   nickname: string | null;
-  djName: string | null;
-  djId: string | null;
   socialLinks: SocialLink[];
   profileImageUrl: string | null;
   isFollowing: boolean | null;
