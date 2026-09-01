@@ -1,0 +1,146 @@
+"use client";
+
+import { useState } from "react";
+import { isAxiosError } from "axios";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+
+import { useUpdateProfileMutation } from "@/api/profile/queries";
+import type { SocialLink } from "@/api/profile/types";
+
+// FastAPI 422는 detail이 문자열이 아니라 ValidationError({type, loc, msg, ...}) 배열로 온다 —
+// 객체를 그대로 렌더링하면 React가 터지므로 항상 문자열로 정규화해서 반환한다.
+type ProfileUpdateErrorDetail =
+  | string
+  | { type: string; loc: (string | number)[]; msg: string }[];
+
+function getErrorMessage(error: unknown) {
+  if (isAxiosError<{ detail?: ProfileUpdateErrorDetail }>(error)) {
+    if (error.response?.status === 409) {
+      return "이미 사용 중인 핸들입니다.";
+    }
+    const detail = error.response?.data?.detail;
+    if (Array.isArray(detail)) {
+      return detail.map((item) => item.msg).join(" ") || "정보 변경에 실패했습니다.";
+    }
+    return detail ?? "정보 변경에 실패했습니다.";
+  }
+  return "정보 변경에 실패했습니다.";
+}
+
+type ProfileInfoPanelProps = {
+  identifier: string;
+  handle: string | null;
+  socialLinks: SocialLink[];
+};
+
+export function ProfileInfoPanel({ identifier, handle, socialLinks }: ProfileInfoPanelProps) {
+  const [handleValue, setHandleValue] = useState(handle ?? "");
+  const [links, setLinks] = useState<SocialLink[]>(socialLinks);
+  const updateProfile = useUpdateProfileMutation(identifier);
+
+  function updateLink(index: number, patch: Partial<SocialLink>) {
+    setLinks((prev) => prev.map((link, i) => (i === index ? { ...link, ...patch } : link)));
+  }
+
+  function removeLink(index: number) {
+    setLinks((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function addLink() {
+    setLinks((prev) => [...prev, { platform: "", url: "" }]);
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const trimmedHandle = handleValue.trim();
+    // 플랫폼/URL 중 하나라도 비어 있는 행은 저장하지 않는다.
+    const trimmedLinks = links
+      .map((link) => ({ platform: link.platform.trim(), url: link.url.trim() }))
+      .filter((link) => link.platform && link.url);
+
+    updateProfile.mutate(
+      { handle: trimmedHandle || null, social_links: trimmedLinks },
+      { onSuccess: () => toast.success("정보가 변경되었습니다.") },
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <p className="text-sm text-muted-foreground">정보 변경</p>
+      <div className="w-full rounded-lg border border-border p-4">
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="settings-handle">핸들</FieldLabel>
+            <Input
+              id="settings-handle"
+              value={handleValue}
+              onChange={(event) => setHandleValue(event.target.value)}
+              placeholder="예: username"
+              maxLength={30}
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel>소셜 링크</FieldLabel>
+            <div className="flex flex-col gap-2">
+              {links.map((link, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    aria-label="플랫폼"
+                    value={link.platform}
+                    onChange={(event) => updateLink(index, { platform: event.target.value })}
+                    placeholder="플랫폼 (예: X)"
+                    className="w-28 shrink-0"
+                    maxLength={30}
+                  />
+                  <Input
+                    aria-label="URL"
+                    value={link.url}
+                    onChange={(event) => updateLink(index, { url: event.target.value })}
+                    placeholder="https://..."
+                    className="flex-1"
+                    maxLength={500}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    aria-label="링크 삭제"
+                    onClick={() => removeLink(index)}
+                  >
+                    <IconTrash className="size-4" />
+                  </Button>
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-fit"
+                onClick={addLink}
+              >
+                <IconPlus className="size-4" />
+                링크 추가
+              </Button>
+            </div>
+          </Field>
+
+          {updateProfile.isError && (
+            <FieldError errors={[{ message: getErrorMessage(updateProfile.error) }]} />
+          )}
+        </FieldGroup>
+        <div className="mt-4 flex justify-end">
+          <Button type="submit" disabled={updateProfile.isPending}>
+            {updateProfile.isPending ? "저장 중..." : "저장"}
+          </Button>
+        </div>
+      </div>
+    </form>
+  );
+}
