@@ -110,6 +110,24 @@ export function useMyInfoQuery() {
   return useQuery({ ...myInfoQueryOptions, enabled: ready });
 }
 
+// 로그아웃/탈퇴 공통: me 캐시는 재요청 없이 null로 못박고, auth 도메인을 제외한
+// 나머지(프로필/성적 등 사용자에 종속된 모든 캐시)는 지운다.
+//
+// 처음엔 queryClient.clear()로 전체를 비웠는데, clear()는 캐시에서 쿼리를
+// 제거하기만 할 뿐이라 me 쿼리에 마운트된 관찰자(헤더 등)가 있으면 즉시 /me를
+// 다시 요청한다. 이 요청이 401을 받으면 axios 인터셉터가 /refresh를 자동
+// 재시도하는데, 로그아웃 처리와 이 재요청이 경합하면서 — 특히 refresh가
+// 성공해버리는 경우 — 화면이 계속 로그인 상태로 보이는 버그가 있었다(setQueryData로
+// null을 나중에 덮어써도, clear()가 이미 트리거한 refetch가 그 이후 응답으로 다시
+// 덮어써 버린다). me 쿼리 자체를 건드리지 않고 값만 못박아야 이 경합이 원천적으로
+// 생기지 않는다.
+function resetSessionCache(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.setQueryData(authKeys.me(), null);
+  queryClient.removeQueries({
+    predicate: (query) => query.queryKey[0] !== authKeys.all[0],
+  });
+}
+
 /*
 POST /api/v1/auth/logout
 로그아웃 - Logout
@@ -119,23 +137,21 @@ export function useLogoutMutation() {
 
   return useMutation({
     mutationFn: logout,
-    onSuccess: () => {
-      queryClient.removeQueries({ queryKey: authKeys.all });
-    },
+    onSuccess: () => resetSessionCache(queryClient),
   });
 }
 
 /*
 DELETE /api/v1/auth/me
 회원 탈퇴 (계정 영구 삭제) - Withdraw
+
+계정 자체가 사라지므로 로그아웃과 동일하게 캐시를 정리한다(위 resetSessionCache 참고).
 */
 export function useWithdrawAccountMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: withdrawAccount,
-    onSuccess: () => {
-      queryClient.removeQueries({ queryKey: authKeys.all });
-    },
+    onSuccess: () => resetSessionCache(queryClient),
   });
 }
