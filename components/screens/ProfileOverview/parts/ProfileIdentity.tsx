@@ -16,8 +16,6 @@ export function ProfileIdentity({
   identifier,
   handle,
   nickname,
-  djName,
-  djId,
   socialLinks,
   profileImageUrl,
   isFollowing,
@@ -25,11 +23,10 @@ export function ProfileIdentity({
   followingCount,
   isOwnProfile,
 }: ProfileSummary & OwnProfileSectionProps) {
-  const initial = (handle ?? nickname ?? djName ?? "?")
+  const initial = (handle ?? nickname ?? "?")
     .replace(/^@/, "")
     .charAt(0)
     .toUpperCase();
-  const djLabel = djName ? (djId ? `${djName} (${djId})` : djName) : "미등록";
 
   return (
     <div className="flex flex-col gap-4">
@@ -65,7 +62,6 @@ export function ProfileIdentity({
             </span>
           </div>
           <div className="space-y-0.5 text-sm text-muted-foreground">
-            <p>DJ NAME: {djLabel}</p>
             {socialLinks.map((link) => (
               <p
                 key={`${link.platform}-${link.url}`}
