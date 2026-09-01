@@ -18,6 +18,20 @@ export function AccountPanel({ identifier, isIidxMember }: AccountPanelProps) {
   const router = useRouter();
   const logout = useLogoutMutation();
 
+  // /settings는 AuthGuard로 보호된 라우트라, 로그아웃 성공 후에 이동하면 그 사이
+  // me 캐시가 비면서 AuthGuard가 먼저 반응해 로그인 페이지로 보내버리는 경합이
+  // 있었다(이 페이지로 돌아오라는 ?redirect= 까지 붙어서). 홈은 인증이 필요 없는
+  // 라우트라 먼저 이동해두면 그 경합 자체가 생기지 않는다 — 로그아웃 요청은
+  // 이동과 무관하게 백그라운드에서 계속 진행된다.
+  function handleLogout() {
+    router.replace("/");
+    logout.mutate(undefined, {
+      onSuccess: () => {
+        sessionStorage.removeItem("handle_setup_redirected");
+      },
+    });
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <p className="text-sm text-muted-foreground">계정</p>
@@ -30,14 +44,7 @@ export function AccountPanel({ identifier, isIidxMember }: AccountPanelProps) {
               variant="outline"
               className="w-full sm:w-auto"
               disabled={logout.isPending}
-              onClick={() =>
-                logout.mutate(undefined, {
-                  onSuccess: () => {
-                    sessionStorage.removeItem("handle_setup_redirected");
-                    router.replace("/");
-                  },
-                })
-              }
+              onClick={handleLogout}
             >
               {logout.isPending ? "로그아웃 중..." : "로그아웃"}
             </Button>

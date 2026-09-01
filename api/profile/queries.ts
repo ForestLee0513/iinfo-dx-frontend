@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
+import { iidxScoresKeys } from "@/api/iidxScores/queries";
 import {
   followUser,
   getFollowers,
@@ -170,6 +171,9 @@ IIDX 서비스 탈퇴 (서비스 데이터 삭제, 계정은 유지) - Withdraw 
 
 IIDX 프로필 캐시는 완전히 비우고(온보딩 이전 상태로), base 프로필 캐시의
 joined_services에서 "iidx"만 제거한다 — 204라 갱신된 프로필을 다시 내려주지 않는다.
+성적 요약/기여도 그래프/스냅샷 목록(iidxScoresKeys) 역시 이 identifier의 IIDX
+데이터라 함께 비우지 않으면, 같은 identifier로 재온보딩했을 때 삭제 전 성적이
+재조회 전까지 잠깐 그대로 보인다.
 */
 export function useWithdrawIidxProfileMutation(identifier: string) {
   const queryClient = useQueryClient();
@@ -178,6 +182,7 @@ export function useWithdrawIidxProfileMutation(identifier: string) {
     mutationFn: withdrawIidxProfile,
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: iidxProfileKeys.detail(identifier) });
+      queryClient.removeQueries({ queryKey: iidxScoresKeys.all });
       queryClient.setQueryData<ProfileResponse>(profileKeys.detail(identifier), (prev) =>
         prev
           ? {

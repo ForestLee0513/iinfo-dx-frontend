@@ -38,6 +38,18 @@ export function DesktopAuthActions() {
 
   const initial = (myInfo.data.email ?? myInfo.data.id).charAt(0).toUpperCase();
 
+  // 설정 등 보호된 라우트에서 로그아웃하면, 성공 후 이동 사이 me 캐시가 비면서
+  // AuthGuard가 먼저 반응해 로그인 페이지로 보내버리는 경합이 있었다 — 인증이
+  // 필요 없는 홈으로 먼저 이동해두면 그 경합이 생기지 않는다.
+  function handleLogout() {
+    router.replace("/");
+    logout.mutate(undefined, {
+      onSuccess: () => {
+        sessionStorage.removeItem("handle_setup_redirected");
+      },
+    });
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -63,14 +75,7 @@ export function DesktopAuthActions() {
           <DropdownMenuItem
             variant="destructive"
             disabled={logout.isPending}
-            onClick={() =>
-              logout.mutate(undefined, {
-                onSuccess: () => {
-                  sessionStorage.removeItem("handle_setup_redirected");
-                  router.replace("/");
-                },
-              })
-            }
+            onClick={handleLogout}
           >
             {logout.isPending ? "로그아웃 중..." : "로그아웃"}
           </DropdownMenuItem>
