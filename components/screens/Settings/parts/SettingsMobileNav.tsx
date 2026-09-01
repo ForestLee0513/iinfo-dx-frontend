@@ -1,23 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { IconChevronDown } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { SETTINGS_TABS } from "../constants";
-import type { SettingsTabId } from "../types";
 import { SettingsNavItem } from "./SettingsNavItem";
-
-type SettingsMobileNavProps = {
-  activeTab: SettingsTabId;
-  onSelectTab: (tab: SettingsTabId) => void;
-};
 
 // md 미만(모바일)에서만 노출되는 아코디언 네비게이션 — 접으면 현재 탭 이름 + 화살표만,
 // 펼치면 사이드바와 동일한 항목 목록을 보여준다.
-export function SettingsMobileNav({ activeTab, onSelectTab }: SettingsMobileNavProps) {
+export function SettingsMobileNav() {
   const [open, setOpen] = useState(false);
-  const activeLabel = SETTINGS_TABS.find((tab) => tab.id === activeTab)?.label;
+  const pathname = usePathname();
+  const activeLabel = SETTINGS_TABS.find((tab) => tab.href === pathname)?.label;
 
   return (
     <div className="w-full md:hidden">
@@ -36,11 +32,8 @@ export function SettingsMobileNav({ activeTab, onSelectTab }: SettingsMobileNavP
             <SettingsNavItem
               key={tab.id}
               tab={tab}
-              active={tab.id === activeTab}
-              onSelect={() => {
-                onSelectTab(tab.id);
-                setOpen(false);
-              }}
+              active={tab.href === pathname}
+              onClick={() => setOpen(false)}
             />
           ))}
         </div>

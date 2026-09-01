@@ -1,11 +1,6 @@
-import { AuthGuard } from "@/components/common/AuthGuard";
-import { Settings } from "@/components/screens/Settings";
+import { redirect } from "next/navigation";
 
-// 계정 관리(로그아웃/탈퇴)를 다루는 화면이라 로그인 사용자만 접근할 수 있다.
+// /settings 자체는 콘텐츠가 없다 — 기본 탭(계정)으로 보낸다.
 export default function SettingsPage() {
-  return (
-    <AuthGuard>
-      <Settings />
-    </AuthGuard>
-  );
+  redirect("/settings/account");
 }
