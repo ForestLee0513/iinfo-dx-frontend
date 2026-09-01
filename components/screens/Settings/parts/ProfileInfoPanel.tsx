@@ -1,16 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { isAxiosError } from "axios";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldTitle,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 
 import { useUpdateProfileMutation } from "@/api/profile/queries";
 import type { SocialLink } from "@/api/profile/types";
+import { IidxVisibilityRow } from "./IidxVisibilityRow";
 
 // FastAPI 422는 detail이 문자열이 아니라 ValidationError({type, loc, msg, ...}) 배열로 온다 —
 // 객체를 그대로 렌더링하면 React가 터지므로 항상 문자열로 정규화해서 반환한다.
@@ -25,7 +36,9 @@ function getErrorMessage(error: unknown) {
     }
     const detail = error.response?.data?.detail;
     if (Array.isArray(detail)) {
-      return detail.map((item) => item.msg).join(" ") || "정보 변경에 실패했습니다.";
+      return (
+        detail.map((item) => item.msg).join(" ") || "정보 변경에 실패했습니다."
+      );
     }
     return detail ?? "정보 변경에 실패했습니다.";
   }
@@ -34,17 +47,33 @@ function getErrorMessage(error: unknown) {
 
 type ProfileInfoPanelProps = {
   identifier: string;
+  nickname: string | null;
   handle: string | null;
   socialLinks: SocialLink[];
+  isPublic: boolean;
+  isIidxMember: boolean;
 };
 
-export function ProfileInfoPanel({ identifier, handle, socialLinks }: ProfileInfoPanelProps) {
+// 닉네임 변경과 정보 변경(핸들/소셜 링크/공개 여부)은 원래 별도 탭이었지만, 하나의
+// 프로필 수정(PATCH /profile/me) 요청으로 묶이는 필드라 폼도 하나로 합쳤다.
+export function ProfileInfoPanel({
+  identifier,
+  nickname,
+  handle,
+  socialLinks,
+  isPublic,
+  isIidxMember,
+}: ProfileInfoPanelProps) {
+  const [nicknameValue, setNicknameValue] = useState(nickname ?? "");
   const [handleValue, setHandleValue] = useState(handle ?? "");
   const [links, setLinks] = useState<SocialLink[]>(socialLinks);
+  const [isPublicValue, setIsPublicValue] = useState(isPublic);
   const updateProfile = useUpdateProfileMutation(identifier);
 
   function updateLink(index: number, patch: Partial<SocialLink>) {
-    setLinks((prev) => prev.map((link, i) => (i === index ? { ...link, ...patch } : link)));
+    setLinks((prev) =>
+      prev.map((link, i) => (i === index ? { ...link, ...patch } : link)),
+    );
   }
 
   function removeLink(index: number) {
@@ -55,9 +84,10 @@ export function ProfileInfoPanel({ identifier, handle, socialLinks }: ProfileInf
     setLinks((prev) => [...prev, { platform: "", url: "" }]);
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    const trimmedNickname = nicknameValue.trim();
     const trimmedHandle = handleValue.trim();
     // 플랫폼/URL 중 하나라도 비어 있는 행은 저장하지 않는다.
     const trimmedLinks = links
@@ -65,7 +95,12 @@ export function ProfileInfoPanel({ identifier, handle, socialLinks }: ProfileInf
       .filter((link) => link.platform && link.url);
 
     updateProfile.mutate(
-      { handle: trimmedHandle || null, social_links: trimmedLinks },
+      {
+        nickname: trimmedNickname || null,
+        handle: trimmedHandle || null,
+        social_links: trimmedLinks,
+        is_public: isPublicValue,
+      },
       { onSuccess: () => toast.success("정보가 변경되었습니다.") },
     );
   }
@@ -75,6 +110,17 @@ export function ProfileInfoPanel({ identifier, handle, socialLinks }: ProfileInf
       <p className="text-sm text-muted-foreground">정보 변경</p>
       <div className="w-full rounded-lg border border-border p-4">
         <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="settings-nickname">닉네임 (선택)</FieldLabel>
+            <Input
+              id="settings-nickname"
+              value={nicknameValue}
+              onChange={(event) => setNicknameValue(event.target.value)}
+              placeholder="예: 홍길동"
+              maxLength={30}
+            />
+          </Field>
+
           <Field>
             <FieldLabel htmlFor="settings-handle">핸들</FieldLabel>
             <Input
@@ -94,7 +140,9 @@ export function ProfileInfoPanel({ identifier, handle, socialLinks }: ProfileInf
                   <Input
                     aria-label="플랫폼"
                     value={link.platform}
-                    onChange={(event) => updateLink(index, { platform: event.target.value })}
+                    onChange={(event) =>
+                      updateLink(index, { platform: event.target.value })
+                    }
                     placeholder="플랫폼 (예: X)"
                     className="w-28 shrink-0"
                     maxLength={30}
@@ -102,7 +150,9 @@ export function ProfileInfoPanel({ identifier, handle, socialLinks }: ProfileInf
                   <Input
                     aria-label="URL"
                     value={link.url}
-                    onChange={(event) => updateLink(index, { url: event.target.value })}
+                    onChange={(event) =>
+                      updateLink(index, { url: event.target.value })
+                    }
                     placeholder="https://..."
                     className="flex-1"
                     maxLength={500}
@@ -131,10 +181,44 @@ export function ProfileInfoPanel({ identifier, handle, socialLinks }: ProfileInf
             </div>
           </Field>
 
+          <Field orientation="horizontal">
+            <FieldContent>
+              <FieldTitle>프로필 공개</FieldTitle>
+              <FieldDescription>
+                비공개로 전환하면 다른 사용자에게 프로필이 보이지 않습니다.
+              </FieldDescription>
+            </FieldContent>
+            <Switch
+              checked={isPublicValue}
+              onCheckedChange={setIsPublicValue}
+              aria-label="프로필 공개 여부"
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel>서비스별 공개 여부</FieldLabel>
+            {!isPublicValue && (
+              <FieldDescription>
+                전체 프로필을 비활성화 할 경우 하위 모든 서비스가 비공개
+                처리됩니다.
+              </FieldDescription>
+            )}
+            <FieldContent>
+              <IidxVisibilityRow
+                identifier={identifier}
+                isMember={isIidxMember}
+                disabled={!isPublicValue}
+              />
+            </FieldContent>
+          </Field>
+
           {updateProfile.isError && (
-            <FieldError errors={[{ message: getErrorMessage(updateProfile.error) }]} />
+            <FieldError
+              errors={[{ message: getErrorMessage(updateProfile.error) }]}
+            />
           )}
         </FieldGroup>
+
         <div className="mt-4 flex justify-end">
           <Button type="submit" disabled={updateProfile.isPending}>
             {updateProfile.isPending ? "저장 중..." : "저장"}

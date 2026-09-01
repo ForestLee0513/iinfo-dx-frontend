@@ -1,4 +1,4 @@
-export type SettingsTabId = "nickname" | "profile" | "account";
+export type SettingsTabId = "profile" | "account";
 
 export type SettingsTabDefinition = {
   id: SettingsTabId;

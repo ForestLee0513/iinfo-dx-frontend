@@ -15,8 +15,11 @@ export function ProfileInfoSettings() {
   return (
     <ProfileInfoPanel
       identifier={identifier}
+      nickname={profile?.nickname ?? null}
       handle={profile?.handle ?? null}
       socialLinks={profile?.social_links ?? []}
+      isPublic={profile?.is_public ?? true}
+      isIidxMember={profile?.joined_services.includes("iidx") ?? false}
     />
   );
 }
