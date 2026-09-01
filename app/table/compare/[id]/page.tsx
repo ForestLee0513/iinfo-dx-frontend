@@ -1,3 +1,4 @@
+import { AuthGuard } from "@/components/common/AuthGuard";
 import { RankTable } from "@/components/screens/RankTable";
 
 // id는 비교 대상의 UUID 또는 handle — useProfileQuery(identifier)와 그대로 대응한다.
@@ -8,5 +9,9 @@ export default async function TableComparePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <RankTable opponent={{ identifier: id }} />;
+  return (
+    <AuthGuard>
+      <RankTable opponent={{ identifier: id }} />;
+    </AuthGuard>
+  );
 }
