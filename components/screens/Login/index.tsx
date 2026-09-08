@@ -17,11 +17,7 @@ import { FieldGroup } from "@/components/ui/field";
 import { AUTH_OAUTH_PROVIDERS } from "@/api/auth/constants";
 import { startOAuthLogin } from "@/api/auth/requests";
 import type { AuthOAuthProvider } from "@/api/auth/types";
-import {
-  RETURN_URL_PARAM,
-  sanitizeReturnUrl,
-  saveReturnUrl,
-} from "@/lib/auth-redirect";
+import { RETURN_URL_PARAM, saveReturnUrl } from "@/lib/auth-redirect";
 
 import { GoogleLogo } from "./parts/GoogleLogo";
 import type { LoginProps } from "./types";
@@ -35,8 +31,9 @@ const OAUTH_PROVIDER_META = {
 >;
 
 export function Login({ error, redirect }: LoginProps) {
-  // 권한 가드(AuthGuard)가 붙여 보낸 복귀 경로 — 로그인 후 원래 가려던 페이지로 되돌린다
-  const returnUrl = sanitizeReturnUrl(redirect);
+  // 권한 가드(AuthGuard)가 붙여 보낸 복귀 경로 — 로그인 후 원래 가려던 페이지로 되돌린다.
+  // 서버 컴포넌트(app/(auth)/login/page.tsx)가 이미 화이트리스트 검증을 마친 값이다.
+  const returnUrl = redirect;
   // 최초 값만 상태로 잡아 그대로 표시한다(아래 effect가 URL의 error를 지워도 재표시되지 않도록)
   const rawOAuthError = Array.isArray(error) ? error[0] : error;
   const [oauthErrorMessage] = useState(() =>
