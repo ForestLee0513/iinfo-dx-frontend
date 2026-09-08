@@ -42,6 +42,13 @@ export function seedMyInfo(
 }
 
 /*
+미로그인을 확정한다 — refresh 실패(쿠키 없음/만료) 시 me 캐시를 null로 못박는다
+*/
+export function clearMyInfo(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.setQueryData<AuthMyInfoResponse | null>(authKeys.me(), null);
+}
+
+/*
 POST /api/v1/auth/login
 이메일 로그인 - Email Login
 */
@@ -122,7 +129,7 @@ export function useMyInfoQuery() {
 // 덮어써 버린다). me 쿼리 자체를 건드리지 않고 값만 못박아야 이 경합이 원천적으로
 // 생기지 않는다.
 function resetSessionCache(queryClient: ReturnType<typeof useQueryClient>) {
-  queryClient.setQueryData(authKeys.me(), null);
+  clearMyInfo(queryClient);
   queryClient.removeQueries({
     predicate: (query) => query.queryKey[0] !== authKeys.all[0],
   });
