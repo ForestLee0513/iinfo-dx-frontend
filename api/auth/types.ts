@@ -23,13 +23,9 @@ export interface AuthOAuthLoginRequest {
 }
 
 /*
-POST /api/v1/auth/login
-이메일 로그인 - Email Login
+POST /api/v1/auth/login/{provider}
+OAuth 로그인 - Oauth Login
 */
-export interface AuthLoginRequest {
-  email: string;
-  password: string;
-}
 
 export interface AuthLoginResponse {
   session: {
@@ -44,23 +40,6 @@ export interface AuthLoginResponse {
     app_role: AuthMemberRole; // default: "USER"
     is_public: boolean; // default: true
   };
-}
-
-/*
-POST /api/v1/auth/signup
-이메일 회원가입 - Sign Up
-이메일 확인이 켜져 있으면 session/user 없이 email_confirmation_required: true만 반환된다.
-*/
-export interface AuthSignUpRequest {
-  email: string;
-  password: string;
-  is_public?: boolean; // default: true
-}
-
-export interface AuthSignUpResponse {
-  email_confirmation_required: boolean;
-  session: AuthLoginResponse["session"] | null;
-  user: AuthLoginResponse["user"] | null;
 }
 
 /*

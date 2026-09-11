@@ -6,14 +6,7 @@ import {
 } from "@tanstack/react-query";
 
 import { useAuthReady } from "@/providers/AuthReadyContext";
-import {
-  getMyInfo,
-  loginWithEmail,
-  logout,
-  refreshSession,
-  signUp,
-  withdrawAccount,
-} from "./requests";
+import { getMyInfo, logout, refreshSession, withdrawAccount } from "./requests";
 import type { AuthLoginResponse, AuthMyInfoResponse } from "./types";
 
 /*
@@ -46,39 +39,6 @@ export function seedMyInfo(
 */
 export function clearMyInfo(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.setQueryData<AuthMyInfoResponse | null>(authKeys.me(), null);
-}
-
-/*
-POST /api/v1/auth/login
-이메일 로그인 - Email Login
-*/
-export function useEmailLoginMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: loginWithEmail,
-    onSuccess: (data) => {
-      seedMyInfo(queryClient, data);
-    },
-  });
-}
-
-/*
-POST /api/v1/auth/signup
-이메일 회원가입 - Sign Up
-이메일 확인이 꺼져 있으면(session/user 있음) me 캐시를 바로 채운다.
-*/
-export function useSignUpMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: signUp,
-    onSuccess: (data) => {
-      if (data.session && data.user) {
-        seedMyInfo(queryClient, { session: data.session, user: data.user });
-      }
-    },
-  });
 }
 
 /*
