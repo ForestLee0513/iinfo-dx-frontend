@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   IconArrowsExchange,
@@ -9,6 +11,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
+import { useIidxProfileQuery } from "@/api/profile/queries";
 import type { OwnProfileSectionProps, ProfileSummary } from "../types";
 import { FollowButton } from "./FollowButton";
 
@@ -23,6 +26,9 @@ export function ProfileIdentity({
   followingCount,
   isOwnProfile,
 }: ProfileSummary & OwnProfileSectionProps) {
+  // IIDX 식별 정보는 프로필 소개와 같은 블록에 둔다. IIDX 탭도 같은 쿼리를
+  // 사용하므로 TanStack Query 캐시를 공유해 중복 네트워크 요청은 발생하지 않는다.
+  const iidxProfile = useIidxProfileQuery(identifier);
   const initial = (handle ?? nickname ?? "?")
     .replace(/^@/, "")
     .charAt(0)
@@ -31,7 +37,7 @@ export function ProfileIdentity({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center xl:flex-col! xl:items-start">
-        <Avatar className="size-32 shrink-0 sm:size-28 md:size-36 xl:size-56">
+        <Avatar className="size-24 shrink-0 sm:size-32 xl:size-56">
           {profileImageUrl && (
             <AvatarImage
               src={profileImageUrl}
@@ -41,11 +47,21 @@ export function ProfileIdentity({
           <AvatarFallback className="text-2xl">{initial}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold sm:text-2xl">
+          <h2 className="text-lg font-semibold sm:text-xl xl:text-2xl">
             {nickname ?? (handle ? `@${handle}` : "닉네임 미설정")}
           </h2>
           {handle && (
             <p className="text-sm text-muted-foreground">@{handle}</p>
+          )}
+          {iidxProfile.isSuccess && (
+            <p className="text-sm text-muted-foreground">
+              DJ NAME: {" "}
+              {iidxProfile.data.dj_name
+                ? iidxProfile.data.dj_id
+                  ? `${iidxProfile.data.dj_name} (${iidxProfile.data.dj_id})`
+                  : iidxProfile.data.dj_name
+                : "미등록"}
+            </p>
           )}
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <span>

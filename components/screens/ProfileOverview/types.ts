@@ -45,9 +45,11 @@ export type HistoryEntry = {
   lampId: ClearLampSegment["id"];
 };
 
-// react-calendar-heatmap의 values 항목 — 날짜별 점수 갱신 횟수.
-// GET /api/v1/iidx/scores/upload-calendar 응답(UploadDayCount)을 변환해 채운다.
+// react-calendar-heatmap의 values 항목 — 날짜별 성적 추가·갱신 채보 수.
+// GET /api/v1/iidx/scores/update-calendar 응답을 변환해 채운다.
 export type ActivityHeatMapValue = {
   date: string;
   count: number;
+  added: number;
+  updated: number;
 };

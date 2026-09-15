@@ -14,7 +14,7 @@ import { ProfileIdentity } from "./parts/ProfileIdentity";
 import type { ProfileOverviewProps } from "./types";
 
 const CONTAINER_CLASS_NAME =
-  "mx-auto w-full max-w-[1440px] px-4 py-8 md:px-6 xl:px-12! xl:py-12";
+  "mx-auto w-full max-w-[1440px] px-3 py-4 sm:px-6 sm:py-10 xl:px-12! xl:py-12";
 
 // Figma 프로필 화면(1920/1280/320 너비 목업)을 하나의 반응형 레이아웃으로 구현한다.
 // xl 미만에서는 단일 컬럼으로 쌓이고, xl 이상에서 프로필 정보가 좌측 사이드바로 분리된다.
@@ -92,13 +92,15 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
         밀린다 — min-w-0으로 풀어야 내부 overflow-x-auto가 실제로 스크롤을 맡는다. */}
         <div className="min-w-0 flex-1">
           <Tabs defaultValue="iidx">
-            <TabsList>
-              <TabsTrigger value="iidx">IIDX</TabsTrigger>
-              <TabsTrigger value="sdvx" disabled>
-                SDVX (준비중)
+            <TabsList className="h-8 rounded-lg p-0.5">
+              <TabsTrigger value="iidx" className="h-7 rounded-lg px-2 py-1">
+                IIDX
+              </TabsTrigger>
+              <TabsTrigger value="sdvx" disabled className="h-7 rounded-lg px-2 py-1">
+                추가 예정
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="iidx" className="mt-6">
+            <TabsContent value="iidx" className="mt-10">
               <IidxTabContent
                 userId={ready ? userId : undefined}
                 isOwnProfile={isOwnProfile}

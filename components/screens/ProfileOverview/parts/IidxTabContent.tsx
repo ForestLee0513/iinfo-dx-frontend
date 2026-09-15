@@ -52,14 +52,6 @@ export function IidxTabContent({ userId, isOwnProfile }: IidxTabContentProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <p className="text-sm text-muted-foreground">
-        DJ NAME:{" "}
-        {profile.data.dj_name
-          ? profile.data.dj_id
-            ? `${profile.data.dj_name} (${profile.data.dj_id})`
-            : profile.data.dj_name
-          : "미등록"}
-      </p>
       <ClearLampRatio userId={userId} />
       <UpdateHistory userId={userId} />
     </div>

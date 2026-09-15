@@ -3,7 +3,13 @@
 import { useState } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +34,11 @@ export function ClearLampRatio({ userId }: ClearLampRatioProps) {
   // 레벨 드롭다운 선택지는 전체 레벨 합산(level 미지정) 응답의 available_levels로 채운다.
   // summary 쿼리에서 바로 꺼내 쓰면 레벨을 바꿀 때마다 새 쿼리가 로딩되는 동안
   // available_levels도 undefined로 비어 옵션이 "전체" 하나로 줄어들어 버린다.
-  const levels = useScoreSummaryQuery({ identifier: userId, style, level: undefined });
+  const levels = useScoreSummaryQuery({
+    identifier: userId,
+    style,
+    level: undefined,
+  });
   const availableLevels = levels.data?.available_levels ?? [];
 
   // items를 넘기지 않으면 <SelectValue />가 선택된 항목의 라벨(예: "★5") 대신
@@ -44,9 +54,9 @@ export function ClearLampRatio({ userId }: ClearLampRatioProps) {
   };
 
   return (
-    <Card>
+    <Card size="sm" className="rounded-xl shadow-none">
       <CardHeader className="flex flex-row items-center justify-between gap-4">
-        <CardTitle className="text-lg sm:text-xl">클리어 램프 비율</CardTitle>
+        <CardTitle className="text-lg">클리어 램프 비율</CardTitle>
         <div className="flex items-center gap-2">
           <Select
             items={levelItems}
@@ -112,7 +122,10 @@ export function ClearLampRatio({ userId }: ClearLampRatioProps) {
                   // width(%) 대신 flex-grow 비율로 나눈다 — percentages는 소수 1자리로
                   // 반올림된 값이라 8개를 합쳐도 정확히 100이 안 될 수 있고, 그 오차만큼
                   // 맨 오른쪽에 빈 픽셀이 남는다. flex-grow는 항상 컨테이너 폭을 꽉 채운다.
-                  style={{ flexGrow: summary.data.percentages[key], flexBasis: 0 }}
+                  style={{
+                    flexGrow: summary.data.percentages[key],
+                    flexBasis: 0,
+                  }}
                 />
               ))}
             </div>
@@ -125,7 +138,7 @@ export function ClearLampRatio({ userId }: ClearLampRatioProps) {
                       swatchClassName,
                     )}
                   />
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-[13px] text-muted-foreground">
                     {label} ({summary.data.percentages[key]}%)
                   </span>
                 </div>
