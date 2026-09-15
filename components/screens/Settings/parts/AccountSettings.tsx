@@ -16,6 +16,7 @@ export function AccountSettings() {
     <AccountPanel
       identifier={identifier}
       isIidxMember={profile?.joined_services.includes("iidx") ?? false}
+      needsOnboarding={profile?.handle === null}
     />
   );
 }

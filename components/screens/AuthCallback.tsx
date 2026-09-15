@@ -35,10 +35,9 @@ export function AuthCallback({ error, redirect }: AuthCallbackProps) {
   */
   const [returnUrl] = useState(() => peekReturnUrl() ?? redirect);
 
-  // 복귀 경로가 있으면 목적지가 이미 정해져 있어 프로필(handle) 조회가 필요 없다.
-  const profile = useProfileQuery(
-    ready && myInfo && !returnUrl ? myInfo.id : undefined,
-  );
+  // 신규 가입자는 복귀 경로보다 프로필 생성이 우선이다. 핸들 등록 여부를 확인한 뒤
+  // 기존 회원만 원래 목적지로 돌려보낸다.
+  const profile = useProfileQuery(ready && myInfo ? myInfo.id : undefined);
   const didRedirect = useRef(false);
 
   // ?error= 파라미터 — 백엔드는 에러 시 홈으로 보내지만 혹시 이 페이지로 들어온 경우 방어.
@@ -76,12 +75,13 @@ export function AuthCallback({ error, redirect }: AuthCallbackProps) {
       return;
     }
 
-    // 복귀 경로가 있으면 프로필 조회를 기다리지 않고 원래 가려던 페이지로
-    if (returnUrl) {
+    // 신규 계정(핸들 미등록)은 redirect 유무와 관계없이 바로 프로필 생성으로 안내한다.
+    // 온보딩 화면에서는 별도 이탈 방지를 하지 않으므로, 홈 이동 등 사용자의 자발적인
+    // 페이지 이동은 그대로 허용된다.
+    if (profile.isSuccess && !profile.data?.handle) {
       didRedirect.current = true;
       clearReturnUrl();
-      sessionStorage.setItem("handle_setup_redirected", "1");
-      router.replace(returnUrl);
+      router.replace("/onboarding");
       return;
     }
 
@@ -95,6 +95,15 @@ export function AuthCallback({ error, redirect }: AuthCallbackProps) {
 
     if (profile.isPending || !profile.data) return;
 
+    // 기존 회원만 로그인 전의 목적지로 복귀시킨다.
+    if (returnUrl) {
+      didRedirect.current = true;
+      clearReturnUrl();
+      sessionStorage.setItem("handle_setup_redirected", "1");
+      router.replace(returnUrl);
+      return;
+    }
+
     const slug = profile.data.handle ?? myInfo.id;
     didRedirect.current = true;
     sessionStorage.setItem("handle_setup_redirected", "1");
@@ -103,6 +112,7 @@ export function AuthCallback({ error, redirect }: AuthCallbackProps) {
     ready,
     myInfo,
     profile.isPending,
+    profile.isSuccess,
     profile.isError,
     profile.data,
     returnUrl,

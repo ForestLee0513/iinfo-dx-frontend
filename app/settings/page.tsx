@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
+import { SettingsLanding } from "@/components/screens/Settings/parts/SettingsLanding";
 
-// /settings 자체는 콘텐츠가 없다 — 기본 탭(정보 변경)으로 보낸다.
+// 기본 탭은 프로필 생성 여부에 따라 클라이언트에서 결정한다.
 export default function SettingsPage() {
-  redirect("/settings/profile");
+  return <SettingsLanding />;
 }
