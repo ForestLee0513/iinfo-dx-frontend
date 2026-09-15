@@ -52,6 +52,7 @@ type ProfileInfoPanelProps = {
   socialLinks: SocialLink[];
   isPublic: boolean;
   isIidxMember: boolean;
+  serviceVisibility: Record<string, boolean>;
 };
 
 // 닉네임 변경과 정보 변경(핸들/소셜 링크/공개 여부)은 원래 별도 탭이었지만, 하나의
@@ -63,11 +64,14 @@ export function ProfileInfoPanel({
   socialLinks,
   isPublic,
   isIidxMember,
+  serviceVisibility,
 }: ProfileInfoPanelProps) {
   const [nicknameValue, setNicknameValue] = useState(nickname ?? "");
   const [handleValue, setHandleValue] = useState(handle ?? "");
   const [links, setLinks] = useState<SocialLink[]>(socialLinks);
   const [isPublicValue, setIsPublicValue] = useState(isPublic);
+  const [serviceVisibilityValue, setServiceVisibilityValue] =
+    useState(serviceVisibility);
   const updateProfile = useUpdateProfileMutation(identifier);
 
   function updateLink(index: number, patch: Partial<SocialLink>) {
@@ -100,6 +104,7 @@ export function ProfileInfoPanel({
         handle: trimmedHandle || null,
         social_links: trimmedLinks,
         is_public: isPublicValue,
+        service_visibility: serviceVisibilityValue,
       },
       { onSuccess: () => toast.success("정보가 변경되었습니다.") },
     );
@@ -205,9 +210,15 @@ export function ProfileInfoPanel({
             )}
             <FieldContent>
               <IidxVisibilityRow
-                identifier={identifier}
                 isMember={isIidxMember}
                 disabled={!isPublicValue}
+                checked={serviceVisibilityValue.iidx ?? true}
+                onCheckedChange={(checked) =>
+                  setServiceVisibilityValue((prev) => ({
+                    ...prev,
+                    iidx: checked,
+                  }))
+                }
               />
             </FieldContent>
           </Field>

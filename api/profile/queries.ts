@@ -126,7 +126,7 @@ export function useFollowingQuery(
 
 /*
 PATCH /api/v1/profile/me
-내 프로필 수정 (handle/nickname/social_links/is_public) - Update My Profile
+내 프로필 수정 (플랫폼/서비스별 공개 여부 포함) - Update My Profile
 
 identifier는 현재 조회 중인 프로필의 쿼리 키(useProfileQuery에 넘긴 값과 동일해야
 한다) — 저장 성공 시 그 캐시만 갱신한다. me API 응답이라 다른 identifier(예: 변경

@@ -20,6 +20,7 @@ export function ProfileInfoSettings() {
       socialLinks={profile?.social_links ?? []}
       isPublic={profile?.is_public ?? true}
       isIidxMember={profile?.joined_services.includes("iidx") ?? false}
+      serviceVisibility={profile?.service_visibility ?? {}}
     />
   );
 }
