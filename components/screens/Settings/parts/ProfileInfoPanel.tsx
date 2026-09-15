@@ -98,8 +98,10 @@ export function ProfileInfoPanel({
     const trimmedNickname = nicknameValue.trim();
     const trimmedHandle = handleValue.trim();
     // 소셜 링크는 플랫폼과 URL을 한 쌍으로 받아야 한다.
-    const trimmedLinks = links
-      .map((link) => ({ platform: link.platform.trim(), url: link.url.trim() }));
+    const trimmedLinks = links.map((link) => ({
+      platform: link.platform.trim(),
+      url: link.url.trim(),
+    }));
 
     if (trimmedLinks.some((link) => !link.platform || !link.url)) {
       setSocialLinksError("소셜 링크의 플랫폼과 URL을 모두 입력해주세요.");
@@ -212,6 +214,8 @@ export function ProfileInfoPanel({
               <FieldTitle>프로필 공개</FieldTitle>
               <FieldDescription>
                 비공개로 전환하면 다른 사용자에게 프로필이 보이지 않습니다.
+                <br />
+                단, 서로 팔로우 중이라면 조회 가능합니다.
               </FieldDescription>
             </FieldContent>
             <Switch
