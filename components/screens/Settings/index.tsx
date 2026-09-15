@@ -1,7 +1,11 @@
+"use client";
+
 import type { ReactNode } from "react";
 
 import { SettingsMobileNav } from "./parts/SettingsMobileNav";
 import { SettingsSidebar } from "./parts/SettingsSidebar";
+import { useSettingsProfile } from "./hooks/useSettingsProfile";
+import { SETTINGS_TABS } from "./constants";
 
 type SettingsShellProps = {
   children: ReactNode;
@@ -13,17 +17,22 @@ type SettingsShellProps = {
 // 탭 전환은 로컬 state가 아니라 라우트(/settings/profile, /settings/account)로
 // 관리한다 — app/settings/layout.tsx가 이 셸로 각 페이지를 감싼다.
 export function SettingsShell({ children }: SettingsShellProps) {
+  const { profile, isPending } = useSettingsProfile();
+  const isProfileIncomplete = !isPending && profile?.handle === null;
+  const tabs = isProfileIncomplete
+    ? SETTINGS_TABS.filter((tab) => tab.id !== "profile")
+    : SETTINGS_TABS;
+
   return (
     <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-3 px-4 pt-6 pb-10 md:gap-4 md:px-6 md:pt-10 md:pb-14 xl:px-12 xl:pt-12 xl:pb-16">
       <h1 className="text-2xl font-bold text-foreground md:text-[28px] xl:text-[32px]">설정</h1>
       <p className="text-xs text-muted-foreground md:text-[13px] xl:text-sm">
         닉네임, 프로필 정보 변경과 계정 관리를 할 수 있습니다.
       </p>
-
-      <SettingsMobileNav />
+      <SettingsMobileNav tabs={tabs} />
 
       <div className="flex w-full flex-col gap-8 md:flex-row md:items-start xl:gap-16">
-        <SettingsSidebar />
+        <SettingsSidebar tabs={tabs} />
         <div className="min-w-0 flex-1">{children}</div>
       </div>
     </div>

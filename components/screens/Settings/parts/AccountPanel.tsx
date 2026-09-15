@@ -12,9 +12,14 @@ import { IidxWithdrawDialog } from "./IidxWithdrawDialog";
 type AccountPanelProps = {
   identifier: string;
   isIidxMember: boolean;
+  needsOnboarding: boolean;
 };
 
-export function AccountPanel({ identifier, isIidxMember }: AccountPanelProps) {
+export function AccountPanel({
+  identifier,
+  isIidxMember,
+  needsOnboarding,
+}: AccountPanelProps) {
   const router = useRouter();
   const logout = useLogoutMutation();
 
@@ -32,10 +37,29 @@ export function AccountPanel({ identifier, isIidxMember }: AccountPanelProps) {
     });
   }
 
+  function handleOnboarding() {
+    router.push("/onboarding");
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <p className="text-sm text-muted-foreground">계정</p>
       <div className="w-full rounded-lg border border-border">
+        {needsOnboarding && (
+          <AccountActionRow
+            title="프로필 온보딩"
+            description="서비스를 원활하게 이용하기 위해서 프로필 온보딩을 완료해주세요."
+            action={
+              <Button
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={handleOnboarding}
+              >
+                온보딩 완료하기
+              </Button>
+            }
+          />
+        )}
         <AccountActionRow
           title="로그아웃"
           description="이 기기에서 로그아웃합니다."

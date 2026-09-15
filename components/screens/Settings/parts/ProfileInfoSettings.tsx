@@ -1,14 +1,23 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useSettingsProfile } from "../hooks/useSettingsProfile";
 import { ProfileInfoPanel } from "./ProfileInfoPanel";
 
 export function ProfileInfoSettings() {
+  const router = useRouter();
   const { identifier, profile, isPending } = useSettingsProfile();
+  const isProfileIncomplete = !isPending && profile?.handle === null;
 
-  if (isPending || !identifier) {
+  useEffect(() => {
+    if (isProfileIncomplete) router.replace("/settings/account");
+  }, [isProfileIncomplete, router]);
+
+  if (isPending || !identifier || isProfileIncomplete) {
     return <Skeleton className="h-48 w-full" />;
   }
 
