@@ -130,7 +130,7 @@ export function ProfileInfoPanel({
       <div className="w-full rounded-lg border border-border p-4">
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="settings-nickname">닉네임 (선택)</FieldLabel>
+            <FieldLabel htmlFor="settings-nickname">닉네임</FieldLabel>
             <Input
               id="settings-nickname"
               value={nicknameValue}
