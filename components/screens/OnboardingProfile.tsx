@@ -14,7 +14,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -24,6 +30,23 @@ import { useUpdateProfileMutation } from "@/api/profile/queries";
 type HandleUpdateErrorDetail =
   | string
   | { type: string; loc: (string | number)[]; msg: string }[];
+
+const HANDLE_PATTERN = /^[a-z0-9_.]+$/;
+const BLOCKED_HANDLE_SUBSTRINGS = ["@", "#", ":", "`"];
+
+function getHandleValidationMessage(handle: string): string | null {
+  if (!handle) return "핸들을 입력해 주세요.";
+  if (BLOCKED_HANDLE_SUBSTRINGS.some((term) => handle.includes(term))) {
+    return "핸들에는 @, #, :, 백틱(`), everyone, here, discord를 사용할 수 없습니다.";
+  }
+  if (handle.includes("..")) {
+    return "마침표(.)는 연속해서 사용할 수 없습니다.";
+  }
+  if (!HANDLE_PATTERN.test(handle)) {
+    return "핸들은 소문자 영문, 숫자, 밑줄(_), 마침표(.)만 사용할 수 있습니다.";
+  }
+  return null;
+}
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError<{ detail?: HandleUpdateErrorDetail }>(error)) {
@@ -47,10 +70,14 @@ export function OnboardingProfile() {
   const router = useRouter();
   const [handle, setHandle] = useState("");
   const [nickname, setNickname] = useState("");
+  const [handleError, setHandleError] = useState<string | null>(null);
   const myInfo = useMyInfoQuery();
   const identifier = myInfo.data?.id;
   const updateProfile = useUpdateProfileMutation(identifier ?? "");
   const logout = useLogoutMutation();
+  const displayedHandleError =
+    handleError ??
+    (updateProfile.isError ? getErrorMessage(updateProfile.error) : null);
 
   if (!identifier) {
     return <Skeleton className="h-114 w-full max-w-sm" />;
@@ -58,11 +85,14 @@ export function OnboardingProfile() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const trimmedHandle = handle.trim();
-    if (!trimmedHandle) return;
+    const validationMessage = getHandleValidationMessage(handle);
+    if (validationMessage) {
+      setHandleError(validationMessage);
+      return;
+    }
 
     updateProfile.mutate(
-      { handle: trimmedHandle, nickname: nickname.trim() || null },
+      { handle, nickname: nickname.trim() || null },
       {
         onSuccess: (data) => {
           router.push(`/profile/${data.handle ?? data.id}`);
@@ -94,14 +124,22 @@ export function OnboardingProfile() {
               <Input
                 id="onboarding-handle"
                 value={handle}
-                onChange={(event) => setHandle(event.target.value)}
-                placeholder="예: iidx_woolim"
+                onChange={(event) => {
+                  setHandle(event.target.value);
+                  setHandleError(null);
+                  updateProfile.reset();
+                }}
+                placeholder="예: iinfo_dx"
                 maxLength={30}
+                aria-invalid={displayedHandleError ? true : undefined}
                 required
               />
               <FieldDescription>
-                영문, 숫자, 밑줄(_) 사용 가능 · 최대 30자
+                소문자 영문, 숫자, 밑줄(_), 마침표(.) 사용 가능 · 최대 30자
               </FieldDescription>
+              {displayedHandleError && (
+                <FieldError errors={[{ message: displayedHandleError }]} />
+              )}
             </Field>
 
             <Field>
@@ -120,12 +158,6 @@ export function OnboardingProfile() {
               </FieldDescription>
             </Field>
 
-            {updateProfile.isError && (
-              <FieldError
-                errors={[{ message: getErrorMessage(updateProfile.error) }]}
-              />
-            )}
-
             <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
               <IconInfoCircle className="mt-0.5 size-4 shrink-0" />
               <p>
@@ -137,7 +169,7 @@ export function OnboardingProfile() {
             <Button
               type="submit"
               className="w-full"
-              disabled={updateProfile.isPending || !handle.trim()}
+              disabled={updateProfile.isPending || !handle}
             >
               {updateProfile.isPending ? "저장 중..." : "프로필 완성하기"}
             </Button>
