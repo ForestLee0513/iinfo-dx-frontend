@@ -72,16 +72,19 @@ export function ProfileInfoPanel({
   const [isPublicValue, setIsPublicValue] = useState(isPublic);
   const [serviceVisibilityValue, setServiceVisibilityValue] =
     useState(serviceVisibility);
+  const [socialLinksError, setSocialLinksError] = useState<string | null>(null);
   const updateProfile = useUpdateProfileMutation(identifier);
   const isHandleLocked = handle !== null;
 
   function updateLink(index: number, patch: Partial<SocialLink>) {
+    setSocialLinksError(null);
     setLinks((prev) =>
       prev.map((link, i) => (i === index ? { ...link, ...patch } : link)),
     );
   }
 
   function removeLink(index: number) {
+    setSocialLinksError(null);
     setLinks((prev) => prev.filter((_, i) => i !== index));
   }
 
@@ -94,10 +97,16 @@ export function ProfileInfoPanel({
 
     const trimmedNickname = nicknameValue.trim();
     const trimmedHandle = handleValue.trim();
-    // 플랫폼/URL 중 하나라도 비어 있는 행은 저장하지 않는다.
+    // 소셜 링크는 플랫폼과 URL을 한 쌍으로 받아야 한다.
     const trimmedLinks = links
-      .map((link) => ({ platform: link.platform.trim(), url: link.url.trim() }))
-      .filter((link) => link.platform && link.url);
+      .map((link) => ({ platform: link.platform.trim(), url: link.url.trim() }));
+
+    if (trimmedLinks.some((link) => !link.platform || !link.url)) {
+      setSocialLinksError("소셜 링크의 플랫폼과 URL을 모두 입력해주세요.");
+      return;
+    }
+
+    setSocialLinksError(null);
 
     updateProfile.mutate(
       {
@@ -193,6 +202,9 @@ export function ProfileInfoPanel({
                 링크 추가
               </Button>
             </div>
+            {socialLinksError && (
+              <FieldError errors={[{ message: socialLinksError }]} />
+            )}
           </Field>
 
           <Field orientation="horizontal">
