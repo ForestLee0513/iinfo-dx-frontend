@@ -36,6 +36,13 @@ export const profileKeys = {
     [...profileKeys.detail(identifier), "following"] as const,
 };
 
+function followListParams(params?: FollowListParams) {
+  return {
+    page: params?.page ?? 1,
+    per_page: params?.per_page ?? 20,
+  };
+}
+
 export const iidxProfileKeys = {
   all: ["iidxProfile"] as const,
   detail: (identifier: string) => [...iidxProfileKeys.all, identifier] as const,
@@ -98,13 +105,18 @@ export function useIidxProfileQuery(identifier: string | undefined) {
 GET /api/v1/profile/{identifier}/followers
 팔로워 목록 - Get Followers
 */
-export function useFollowersQuery(
-  identifier: string | undefined,
-  params?: FollowListParams,
-) {
+export function followersQueryOptions(identifier: string, params?: FollowListParams) {
+  const queryParams = followListParams(params);
+
+  return queryOptions({
+    queryKey: [...profileKeys.followers(identifier), queryParams],
+    queryFn: () => getFollowers(identifier, queryParams),
+  });
+}
+
+export function useFollowersQuery(identifier: string | undefined, params?: FollowListParams) {
   return useQuery({
-    queryKey: [...(profileKeys.followers(identifier ?? "")), params],
-    queryFn: () => getFollowers(identifier!, params),
+    ...followersQueryOptions(identifier ?? "", params),
     enabled: Boolean(identifier),
   });
 }
@@ -113,13 +125,18 @@ export function useFollowersQuery(
 GET /api/v1/profile/{identifier}/following
 팔로잉 목록 - Get Following
 */
-export function useFollowingQuery(
-  identifier: string | undefined,
-  params?: FollowListParams,
-) {
+export function followingQueryOptions(identifier: string, params?: FollowListParams) {
+  const queryParams = followListParams(params);
+
+  return queryOptions({
+    queryKey: [...profileKeys.following(identifier), queryParams],
+    queryFn: () => getFollowing(identifier, queryParams),
+  });
+}
+
+export function useFollowingQuery(identifier: string | undefined, params?: FollowListParams) {
   return useQuery({
-    queryKey: [...(profileKeys.following(identifier ?? "")), params],
-    queryFn: () => getFollowing(identifier!, params),
+    ...followingQueryOptions(identifier ?? "", params),
     enabled: Boolean(identifier),
   });
 }
@@ -232,6 +249,7 @@ export function useToggleFollowMutation(identifier: string) {
       queryClient.setQueryData<IidxProfileResponse>(iidxProfileKeys.detail(identifier), (prev) =>
         patchFollowState(prev, nextFollowing),
       );
+      queryClient.invalidateQueries({ queryKey: profileKeys.followers(identifier) });
     },
   });
 }

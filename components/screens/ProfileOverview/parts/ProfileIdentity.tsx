@@ -64,18 +64,24 @@ export function ProfileIdentity({
             </p>
           )}
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <span>
+            <Link
+              href={`/profile/${identifier}/followers`}
+              className="hover:text-foreground"
+            >
               <span className="font-semibold text-foreground">
                 {followersCount}
               </span>{" "}
               팔로워
-            </span>
-            <span>
+            </Link>
+            <Link
+              href={`/profile/${identifier}/following`}
+              className="hover:text-foreground"
+            >
               <span className="font-semibold text-foreground">
                 {followingCount}
               </span>{" "}
               팔로잉
-            </span>
+            </Link>
           </div>
           <div className="space-y-0.5 text-sm text-muted-foreground">
             {socialLinks.map((link) => (
