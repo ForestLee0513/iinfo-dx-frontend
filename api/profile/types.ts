@@ -41,6 +41,7 @@ export interface ProfileResponse {
   following_count: number; // default: 0
   is_following: boolean | null; // 로그인 사용자의 팔로우 여부 — 미로그인/본인 조회 시 null
   joined_services: string[]; // 온보딩을 완료한 서비스 목록 (예: ["iidx"])
+  service_visibility: Record<string, boolean>; // 서비스별 공개 여부 (예: { iidx: true })
 }
 
 /*
@@ -55,19 +56,22 @@ DELETE /api/v1/profile/{identifier}/follow
 
 /*
 PATCH /api/v1/profile/me
-내 프로필 수정 (handle/nickname/social_links/is_public) - Update My Profile
+내 프로필 수정 (플랫폼/서비스별 공개 여부 포함) - Update My Profile
 
 본문에 없는 필드는 그대로 유지된다(부분 업데이트). handle을 null로 보내면 핸들을
 해제하고, 이미 다른 사용자가 쓰는 handle이면 409. nickname은 handle과 달리
 유일하지 않아도 되는 일반 표시용 닉네임이라 다른 사용자와 중복돼도 409 없이
 그대로 저장되며, null로 보내면 닉네임을 해제한다. social_links는 보낸 배열로
-통째로 치환된다(부분 추가/삭제가 아님). is_public은 프로필 공개 여부를 전환한다.
+통째로 치환된다(부분 추가/삭제가 아님). is_public은 플랫폼 프로필 공개 여부를,
+service_visibility는 가입한 서비스별 공개 여부를 한 번에 전환한다. 가입하지 않은
+서비스 키는 무시된다.
 */
 export interface ProfileUpdateRequest {
   handle?: string | null;
   nickname?: string | null;
   social_links?: SocialLink[] | null;
   is_public?: boolean | null;
+  service_visibility?: Record<string, boolean> | null;
 }
 
 /*
