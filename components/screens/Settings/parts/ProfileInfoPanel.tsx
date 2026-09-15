@@ -73,6 +73,7 @@ export function ProfileInfoPanel({
   const [serviceVisibilityValue, setServiceVisibilityValue] =
     useState(serviceVisibility);
   const updateProfile = useUpdateProfileMutation(identifier);
+  const isHandleLocked = handle !== null;
 
   function updateLink(index: number, patch: Partial<SocialLink>) {
     setLinks((prev) =>
@@ -101,7 +102,9 @@ export function ProfileInfoPanel({
     updateProfile.mutate(
       {
         nickname: trimmedNickname || null,
-        handle: trimmedHandle || null,
+        // 핸들은 최초 지정 후 변경할 수 없으므로, 이미 있는 경우에는 요청 본문에도
+        // 포함하지 않는다. 아직 없는 계정만 여기서 최초 설정하거나 비워 둘 수 있다.
+        ...(isHandleLocked ? {} : { handle: trimmedHandle || null }),
         social_links: trimmedLinks,
         is_public: isPublicValue,
         service_visibility: serviceVisibilityValue,
@@ -134,7 +137,13 @@ export function ProfileInfoPanel({
               onChange={(event) => setHandleValue(event.target.value)}
               placeholder="예: username"
               maxLength={30}
+              disabled={isHandleLocked}
             />
+            {isHandleLocked && (
+              <FieldDescription>
+                핸들은 최초 설정 후 변경할 수 없습니다.
+              </FieldDescription>
+            )}
           </Field>
 
           <Field>
