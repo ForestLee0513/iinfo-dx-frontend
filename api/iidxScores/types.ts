@@ -103,3 +103,61 @@ export interface UploadCalendarResponse {
   // 포함된다 — FE에서 별도 gap-filling 불필요.
   days: Record<string, number>;
 }
+
+/*
+GET /api/v1/iidx/scores/update-calendar
+날짜별 성적 추가·갱신 채보 수 - Get Score Update Calendar
+
+직전 스냅샷과 비교해 신규 추가된 성적과 갱신된 성적의 채보 수를 날짜별로 반환한다.
+각 날짜의 total은 added + updated이며, 기간·타임존 파라미터는
+UploadCalendar와 동일하다.
+*/
+export type ScoreUpdateCalendarParams = UploadCalendarParams;
+
+// 하루 또는 한 번의 성적 동기화에서 발생한 신규·갱신 채보 수.
+export interface ScoreChangeCounts {
+  added: number;
+  updated: number;
+  total: number;
+}
+
+export interface ScoreUpdateCalendarResponse {
+  style: string | null;
+  tz: string;
+  since: string;
+  until: string;
+  // 선택 기간의 신규 추가·갱신 채보 수 합계.
+  total: number;
+  added_total: number;
+  updated_total: number;
+  // 날짜(YYYY-MM-DD, tz 기준) → 해당 날짜의 신규·갱신 채보 수.
+  days: Record<string, ScoreChangeCounts>;
+}
+
+/*
+GET /api/v1/iidx/scores/update-history
+성적 추가·갱신 이력 - Get Score Update History
+
+성적 동기화마다 발생한 신규·갱신 채보 수를 최신순으로 페이지네이션해 반환한다.
+*/
+export interface ScoreUpdateHistoryParams {
+  identifier: string;
+  style?: IidxPlayStyle;
+  page?: number;
+  per_page?: number;
+}
+
+export interface ScoreUpdateHistoryItem extends ScoreChangeCounts {
+  upload_id: string;
+  play_style: string;
+  source: string;
+  uploaded_at: string;
+}
+
+export interface ScoreUpdateHistoryResponse {
+  page: number;
+  per_page: number;
+  total: number;
+  total_pages: number;
+  items: ScoreUpdateHistoryItem[];
+}
