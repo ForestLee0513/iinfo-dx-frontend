@@ -143,9 +143,7 @@ export function OnboardingProfile() {
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="onboarding-nickname">
-                닉네임 (선택)
-              </FieldLabel>
+              <FieldLabel htmlFor="onboarding-nickname">닉네임</FieldLabel>
               <Input
                 id="onboarding-nickname"
                 value={nickname}
