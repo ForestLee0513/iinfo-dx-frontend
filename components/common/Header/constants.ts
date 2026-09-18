@@ -1,8 +1,8 @@
 import type { NavItem } from "./types";
 
 // 데스크톱 드롭다운과 모바일 사이드바가 같은 값을 쓴다.
-// 프로필 라우트는 /profile/{user_id} — 백엔드 GET /api/v1/web/profile/{user_id}와 대응한다.
-export const getProfileHref = (userId: string) => `/profile/${userId}`;
+// 프로필은 서비스 탭 URL로 바로 진입한다. 공용 /profile/{user_id}는 호환용 IIDX 리다이렉트다.
+export const getProfileHref = (userId: string) => `/profile/${userId}/iidx`;
 
 // 닉네임/계정 관리 화면 — 로그인 사용자 본인 전용이라 동적 파라미터가 없다.
 export const SETTINGS_HREF = "/settings";
