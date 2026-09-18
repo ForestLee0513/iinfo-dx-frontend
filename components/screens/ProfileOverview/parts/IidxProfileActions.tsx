@@ -19,7 +19,7 @@ export function IidxProfileActions({
         <Button
           className="w-full sm:w-auto"
           nativeButton={false}
-          render={<Link href="/iidx/sync" />}
+          render={<Link href="/iidx/score-updates" />}
         >
           <IconRefresh className="size-4" />
           갱신하기
@@ -28,7 +28,7 @@ export function IidxProfileActions({
           variant="outline"
           className="w-full sm:w-auto"
           nativeButton={false}
-          render={<Link href="/iidx/restore" />}
+          render={<Link href="/iidx/score-snapshots" />}
         >
           <IconHistory className="size-4" />
           복구하기
@@ -43,7 +43,7 @@ export function IidxProfileActions({
     <Button
       className="w-full sm:w-auto"
       nativeButton={false}
-      render={<Link href={`/iidx/table/compare/${identifier}`} />}
+      render={<Link href={`/iidx/table-comparisons/${identifier}`} />}
     >
       <IconArrowsExchange className="size-4" />
       서열표 비교하기

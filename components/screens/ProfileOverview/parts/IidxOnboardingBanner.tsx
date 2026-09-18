@@ -30,7 +30,7 @@ export function IidxOnboardingBanner() {
         </div>
 
         <div>
-          <Button nativeButton={false} render={<Link href="/iidx/sync" />}>
+          <Button nativeButton={false} render={<Link href="/iidx/score-updates" />}>
             갱신하러 가기
           </Button>
         </div>
