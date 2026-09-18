@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useProfileQuery } from "@/api/profile/queries";
+import { ServiceTabs } from "@/components/common/ServiceTabs";
 import { useAuthReady } from "@/providers/AuthReadyContext";
 import { IidxTabContent } from "./parts/IidxTabContent";
 import { ProfileIdentity } from "./parts/ProfileIdentity";
@@ -22,7 +22,7 @@ const CONTAINER_CLASS_NAME =
 // 공용 프로필(useProfileQuery)이 기준 데이터다 — 이전에는 IIDX 프로필을 기준으로 조회해
 // IIDX 데이터가 없는 사용자는 공용 프로필(사이드바)조차 볼 수 없었다. 서비스별 프로필
 // 조회는 콘텐츠 영역의 탭(IidxTabContent)으로 분리해, 특정 서비스에 데이터가 없어도
-// 사이드바와 탭 구조는 항상 렌더된다. 서비스가 늘어나면 TabsTrigger/TabsContent만 추가하면 된다.
+// 사이드바와 탭 구조는 항상 렌더된다. 서비스 탭은 ServiceTabs가 공통으로 제공한다.
 export function ProfileOverview({ userId }: ProfileOverviewProps) {
   // 세션 복원(/refresh)이 끝나기 전에 조회하면 Authorization 없이 나가 is_mine이
   // 항상 false로 캐시된다 — AuthProvider 부트스트랩이 끝난 뒤에만 요청한다.
@@ -91,22 +91,12 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
         히트맵 등)가 넓어지면 이 컬럼이 줄어들지 못하고 페이지 전체가 가로로
         밀린다 — min-w-0으로 풀어야 내부 overflow-x-auto가 실제로 스크롤을 맡는다. */}
         <div className="min-w-0 flex-1">
-          <Tabs defaultValue="iidx">
-            <TabsList className="h-8 rounded-lg p-0.5">
-              <TabsTrigger value="iidx" className="h-7 rounded-lg px-2 py-1">
-                IIDX
-              </TabsTrigger>
-              <TabsTrigger value="sdvx" disabled className="h-7 rounded-lg px-2 py-1">
-                추가 예정
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="iidx" className="mt-10">
-              <IidxTabContent
-                userId={ready ? userId : undefined}
-                isOwnProfile={isOwnProfile}
-              />
-            </TabsContent>
-          </Tabs>
+          <ServiceTabs>
+            <IidxTabContent
+              userId={ready ? userId : undefined}
+              isOwnProfile={isOwnProfile}
+            />
+          </ServiceTabs>
         </div>
       </div>
     </div>
