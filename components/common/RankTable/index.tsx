@@ -21,7 +21,7 @@ type RankTableProps = {
   opponent?: RankTableOpponent;
 };
 
-// 서열표/서열표(비교) 화면(Figma 1080/720/320 목업)을 하나의 반응형 레이아웃으로 구현한다.
+// IIDX 서열표/서열표(비교) 화면(Figma 1080/720/320 목업)을 하나의 반응형 레이아웃으로 구현한다.
 // GET /api/v1/iidx/tables, GET /api/v1/iidx/tables/{slug}/board 연동.
 export function RankTable({ opponent }: RankTableProps) {
   const [selectedSlug, setSelectedSlug] = useState<string>();
@@ -39,12 +39,15 @@ export function RankTable({ opponent }: RankTableProps) {
 
   // 램프 표시 여부는 백엔드 판정을 그대로 따른다 — 로그인 사용자의 성적이 있을 때만 user가 채워진다.
   const showLamp = Boolean(board.data?.user);
-  const showComparison = showLamp && Boolean(board.data?.opponent && board.data.comparison);
+  const showComparison =
+    showLamp && Boolean(board.data?.opponent && board.data.comparison);
 
   return (
     <div className={CONTAINER_CLASS_NAME}>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">서열표</h1>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          IIDX 서열표
+        </h1>
         {opponent &&
           (board.isPending ? (
             <Skeleton className="h-10 w-64" />
