@@ -9,6 +9,7 @@ import { useIidxProfileQuery } from "@/api/profile/queries";
 import { ClearLampRatio } from "./ClearLampRatio";
 import { IidxNotSyncedNotice } from "./IidxNotSyncedNotice";
 import { IidxOnboardingBanner } from "./IidxOnboardingBanner";
+import { IidxProfileActions } from "./IidxProfileActions";
 import { IidxProfileInfo } from "./IidxProfileInfo";
 import { UpdateHistory } from "./UpdateHistory";
 
@@ -53,7 +54,15 @@ export function IidxTabContent({ userId, isOwnProfile }: IidxTabContentProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <IidxProfileInfo profile={profile.data} />
+      <IidxProfileInfo
+        profile={profile.data}
+        actions={
+          <IidxProfileActions
+            identifier={userId}
+            isOwnProfile={isOwnProfile}
+          />
+        }
+      />
       <ClearLampRatio userId={userId} />
       <UpdateHistory userId={userId} />
     </div>
