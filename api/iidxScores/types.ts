@@ -124,6 +124,9 @@ export interface ScoreChangeCounts {
 export interface ScoreUpdateCalendarResponse {
   style: string | null;
   tz: string;
+  // 실제 성적 동기화 이력이 있는 연도 목록(요청 tz 기준, 최신순).
+  // 히트맵의 연도 선택지를 서버 데이터에 맞춰 구성할 때 사용한다.
+  available_years: number[];
   since: string;
   until: string;
   // 선택 기간의 신규 추가·갱신 채보 수 합계.

@@ -32,13 +32,6 @@ function getYearRangeParams(year: number) {
   };
 }
 
-// 연도별 활동 조회 API가 아직 없어 최근 5개년 고정 목록으로 선택지를 채운다.
-const SELECTABLE_YEAR_COUNT = 5;
-const SELECTABLE_YEARS = Array.from(
-  { length: SELECTABLE_YEAR_COUNT },
-  (_, idx) => CURRENT_YEAR - idx,
-);
-
 // 선택한 해의 1월 1일 ~ 12월 31일을 기준점으로 잡는다 — "오늘" 기준 롤링 365일이 아니라
 // 캘린더가 쓰는 것과 동일한 연도 경계에 맞춘다.
 function getHeatMapDateRangeForYear(year: number) {
@@ -149,6 +142,7 @@ export function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
     // 날짜별 집계까지 마쳐서 내려준다 — FE는 사용자의 로컬 타임존만 넘기면 된다.
     tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
+  const availableYears = updateCalendar.data?.available_years ?? [];
 
   const countByDate = new Map(
     Object.entries(updateCalendar.data?.days ?? {}).map(([date, counts]) => [
@@ -169,7 +163,9 @@ export function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
   // items를 넘기지 않으면 <SelectValue />가 선택된 항목의 라벨("2026년") 대신
   // 저장된 원시 value 문자열("2026")을 그대로 렌더링한다.
   const yearItems: Record<string, string> = Object.fromEntries(
-    SELECTABLE_YEARS.map((y) => [String(y), `${y}년`]),
+    // 현재 연도에 이력이 없더라도 선택된 값의 라벨은 유지한다. 실제 드롭다운
+    // 항목은 아래 availableYears만 사용하므로 서버가 알려준 범위만 노출된다.
+    [...new Set([year, ...availableYears])].map((y) => [String(y), `${y}년`]),
   );
 
   // 라이브러리가 매 렌더마다 viewBox를 다시 계산해 덮어쓰므로 렌더 이후 매번 보정한다.
@@ -191,11 +187,11 @@ export function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
           value={String(year)}
           onValueChange={(value) => setYear(Number(value ?? CURRENT_YEAR))}
         >
-          <SelectTrigger size="sm" className="w-24">
+          <SelectTrigger size="sm" className="w-24" disabled={availableYears.length === 0}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {SELECTABLE_YEARS.map((y) => (
+            {availableYears.map((y) => (
               <SelectItem key={y} value={String(y)}>
                 {`${y}년`}
               </SelectItem>
