@@ -1,43 +1,64 @@
 "use client";
 
 import Link from "next/link";
-import { IconArrowRight } from "@tabler/icons-react";
+import { Formik } from "formik";
+import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { searchProfiles } from "@/api/profile/requests";
+
+import UserSearchForm from "./parts/UserSearchForm";
+
+import type { SearchFormValues } from "./types";
+
+const INITIAL_SEARCH_VALUES: SearchFormValues = {
+  identifier: "",
+  service: "iidx",
+};
 
 export function Hero() {
+  const router = useRouter();
+
+  async function handleSearch({ identifier, service }: SearchFormValues) {
+    const query = identifier.trim();
+    if (!query) return;
+
+    try {
+      const { results } = await searchProfiles({ q: query, service, limit: 1 });
+      const firstResult = results[0];
+      if (firstResult) router.push(firstResult.profile_path);
+    } catch {
+      // 검색 결과를 가져오지 못하면 현재 페이지를 유지한다.
+    }
+  }
+
   return (
-    <section className="flex flex-col items-center gap-6 px-4 py-16 text-center md:py-20 xl:py-28">
-      <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-        IInfo DX
-      </h1>
+    <section className="justify-center flex px-4 py-16 text-center md:py-20 xl:py-28 h-full">
+      <div className="flex flex-col md:max-w-[483px] gap-6 flex-1 ">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          IInfo DX
+        </h1>
 
-      <p className="max-w-[288px] text-base leading-6 text-muted-foreground md:max-w-[483px] break-keep">
-        beatmania IIDX의 비공식 난이도표를 쉽고 간편하게 관리할 수 있습니다.
-        <br />
-        e-Amusement 기반 데이터 연동, 프로필 생성 / 공유 기능을 제공합니다.
-      </p>
+        <p className="text-base leading-6 text-muted-foreground break-keep">
+          beatmania IIDX의 비공식 난이도표를 쉽고 간편하게 관리할 수 있습니다.
+          <br />
+          e-Amusement 기반 데이터 연동, 프로필 생성 / 공유 기능을 제공합니다.
+        </p>
 
-      <p className="max-w-[288px] text-xs leading-4 tracking-[0.32px] text-muted-foreground/80 md:max-w-[483px]">
-        해당 웹 서비스는 비공식 팬 사이트이며, ‘beatmania IIDX’의 권리는 ‘Konami
-        Amusement’의 소유입니다.
-        <br />
-        계속 진행함으로써{" "}
-        <Link href="#" className="text-primary underline underline-offset-2">
-          이용약관·개인정보 처리방침·데이터 정책
-        </Link>
-        에 동의한 것으로 간주됩니다.
-      </p>
+        <p className="text-xs leading-4 tracking-[0.32px] text-muted-foreground/80">
+          해당 웹 서비스는 비공식 팬 사이트이며, ‘beatmania IIDX’의 권리는
+          ‘Konami Amusement’의 소유입니다.
+          <br />
+          계속 진행함으로써{" "}
+          <Link href="#" className="text-primary underline underline-offset-2">
+            이용약관·개인정보 처리방침·데이터 정책
+          </Link>
+          에 동의한 것으로 간주됩니다.
+        </p>
 
-      <Button
-        size="lg"
-        className="gap-2"
-        nativeButton={false}
-        render={<Link href="/login" />}
-      >
-        시작하기
-        <IconArrowRight className="size-4" />
-      </Button>
+        <Formik initialValues={INITIAL_SEARCH_VALUES} onSubmit={handleSearch}>
+          <UserSearchForm />
+        </Formik>
+      </div>
     </section>
   );
 }

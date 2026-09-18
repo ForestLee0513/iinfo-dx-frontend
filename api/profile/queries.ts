@@ -12,6 +12,7 @@ import {
   getFollowing,
   getIidxProfile,
   getProfile,
+  searchProfiles,
   unfollowUser,
   updateIidxProfile,
   updateProfile,
@@ -22,6 +23,7 @@ import type {
   IidxProfileResponse,
   IidxProfileUpdateRequest,
   ProfileResponse,
+  ProfileSearchParams,
 } from "./types";
 
 /*
@@ -30,6 +32,8 @@ import type {
 export const profileKeys = {
   all: ["profile"] as const,
   detail: (identifier: string) => [...profileKeys.all, identifier] as const,
+  search: (params: ProfileSearchParams) =>
+    [...profileKeys.all, "search", params] as const,
   followers: (identifier: string) =>
     [...profileKeys.detail(identifier), "followers"] as const,
   following: (identifier: string) =>
@@ -80,6 +84,38 @@ export function useProfileQuery(identifier: string | undefined) {
   return useQuery({
     ...profileQueryOptions(identifier ?? ""),
     enabled: Boolean(identifier),
+  });
+}
+
+function profileSearchParams(params: ProfileSearchParams) {
+  return {
+    ...params,
+    q: params.q.trim(),
+    limit: params.limit ?? 8,
+  };
+}
+
+/*
+GET /api/v1/profile/search
+서비스별 공개 프로필 자동완성 검색 - Search Profiles
+*/
+export function profileSearchQueryOptions(params: ProfileSearchParams) {
+  const queryParams = profileSearchParams(params);
+
+  return queryOptions({
+    queryKey: profileKeys.search(queryParams),
+    queryFn: () => searchProfiles(queryParams),
+  });
+}
+
+export function useProfileSearchQuery(params: ProfileSearchParams | undefined) {
+  const queryParams = params ? profileSearchParams(params) : undefined;
+
+  return useQuery({
+    ...profileSearchQueryOptions(
+      queryParams ?? { q: "", service: "iidx", limit: 8 },
+    ),
+    enabled: Boolean(queryParams?.q),
   });
 }
 
