@@ -7,31 +7,19 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useProfileQuery } from "@/api/profile/queries";
-import { ServiceTabs } from "@/components/common/ServiceTabs";
 import { useAuthReady } from "@/providers/AuthReadyContext";
-import { IidxTabContent } from "./parts/IidxTabContent";
 import { ProfileIdentity } from "./parts/ProfileIdentity";
-import type { ProfileOverviewProps } from "./types";
+import type { ProfileLayoutProps } from "./types";
 
 const CONTAINER_CLASS_NAME =
   "mx-auto w-full max-w-[1440px] px-3 py-4 sm:px-6 sm:py-10 xl:px-12! xl:py-12";
 
-// Figma 프로필 화면(1920/1280/320 너비 목업)을 하나의 반응형 레이아웃으로 구현한다.
-// xl 미만에서는 단일 컬럼으로 쌓이고, xl 이상에서 프로필 정보가 좌측 사이드바로 분리된다.
-//
-// 공용 프로필(useProfileQuery)이 기준 데이터다 — 이전에는 IIDX 프로필을 기준으로 조회해
-// IIDX 데이터가 없는 사용자는 공용 프로필(사이드바)조차 볼 수 없었다. 서비스별 프로필
-// 조회는 콘텐츠 영역의 탭(IidxTabContent)으로 분리해, 특정 서비스에 데이터가 없어도
-// 사이드바와 탭 구조는 항상 렌더된다. 서비스 탭은 ServiceTabs가 공통으로 제공한다.
-export function ProfileOverview({ userId }: ProfileOverviewProps) {
-  // 세션 복원(/refresh)이 끝나기 전에 조회하면 Authorization 없이 나가 is_mine이
-  // 항상 false로 캐시된다 — AuthProvider 부트스트랩이 끝난 뒤에만 요청한다.
+// 플랫폼 공통 프로필(식별 정보·팔로우·온보딩)만 담당한다. 서비스 데이터와 콘텐츠는
+// children에서 서비스별로 렌더링해, 특정 서비스가 없어도 공용 프로필은 유지된다.
+export function ProfileLayout({ identifier, children }: ProfileLayoutProps) {
   const ready = useAuthReady();
   const router = useRouter();
-  const profile = useProfileQuery(ready ? userId : undefined);
-
-  // 본인 프로필 + 핸들 미등록 → 온보딩으로 이동. is_mine으로 판정하므로 로그인 후
-  // 타인의 프로필만 잠깐 둘러보는 경우(자신의 프로필을 조회하지 않는 한)에는 걸리지 않는다.
+  const profile = useProfileQuery(ready ? identifier : undefined);
   const needsOnboarding =
     profile.isSuccess && profile.data.is_mine && !profile.data.handle;
 
@@ -75,7 +63,7 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
       <div className="mt-8 flex flex-col gap-10 xl:flex-row! xl:items-start xl:gap-16">
         <div className="xl:w-80 xl:shrink-0">
           <ProfileIdentity
-            identifier={userId}
+            identifier={identifier}
             handle={profile.data.handle}
             nickname={profile.data.nickname}
             socialLinks={profile.data.social_links}
@@ -87,16 +75,8 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
           />
         </div>
 
-        {/* min-w-0: flex 아이템의 기본 min-width는 auto라 내부 콘텐츠(기여도
-        히트맵 등)가 넓어지면 이 컬럼이 줄어들지 못하고 페이지 전체가 가로로
-        밀린다 — min-w-0으로 풀어야 내부 overflow-x-auto가 실제로 스크롤을 맡는다. */}
         <div className="min-w-0 flex-1">
-          <ServiceTabs iidxHref={`/iidx/profiles/${userId}`}>
-            <IidxTabContent
-              userId={ready ? userId : undefined}
-              isOwnProfile={isOwnProfile}
-            />
-          </ServiceTabs>
+          {children({ identifier, isOwnProfile })}
         </div>
       </div>
     </div>
