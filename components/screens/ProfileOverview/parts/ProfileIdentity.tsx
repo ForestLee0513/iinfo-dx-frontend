@@ -11,7 +11,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
-import { useIidxProfileQuery } from "@/api/profile/queries";
 import type { OwnProfileSectionProps, ProfileSummary } from "../types";
 import { FollowButton } from "./FollowButton";
 
@@ -26,9 +25,6 @@ export function ProfileIdentity({
   followingCount,
   isOwnProfile,
 }: ProfileSummary & OwnProfileSectionProps) {
-  // IIDX 식별 정보는 프로필 소개와 같은 블록에 둔다. IIDX 탭도 같은 쿼리를
-  // 사용하므로 TanStack Query 캐시를 공유해 중복 네트워크 요청은 발생하지 않는다.
-  const iidxProfile = useIidxProfileQuery(identifier);
   const initial = (handle ?? nickname ?? "?")
     .replace(/^@/, "")
     .charAt(0)
@@ -52,16 +48,6 @@ export function ProfileIdentity({
           </h2>
           {handle && (
             <p className="text-sm text-muted-foreground">@{handle}</p>
-          )}
-          {iidxProfile.isSuccess && (
-            <p className="text-sm text-muted-foreground">
-              DJ NAME: {" "}
-              {iidxProfile.data.dj_name
-                ? iidxProfile.data.dj_id
-                  ? `${iidxProfile.data.dj_name} (${iidxProfile.data.dj_id})`
-                  : iidxProfile.data.dj_name
-                : "미등록"}
-            </p>
           )}
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <Link
