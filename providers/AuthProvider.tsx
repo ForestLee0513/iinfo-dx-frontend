@@ -4,8 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { refreshSession } from "@/api/auth/requests";
-import { authKeys, seedMyInfo } from "@/api/auth/queries";
-import type { AuthMyInfoResponse } from "@/api/auth/types";
+import { clearMyInfo, seedMyInfo } from "@/api/auth/queries";
 import { getAccessToken } from "@/lib/axios";
 import { AuthReadyContext } from "@/providers/AuthReadyContext";
 
@@ -28,13 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let active = true;
     refreshSession()
       .then((data) => seedMyInfo(queryClient, data))
-      .catch(() =>
-        // refresh 실패(쿠키 없음/만료) = 미로그인 확정
-        queryClient.setQueryData<AuthMyInfoResponse | null>(
-          authKeys.me(),
-          null,
-        ),
-      )
+      .catch(() => clearMyInfo(queryClient)) // refresh 실패(쿠키 없음/만료) = 미로그인 확정
       .finally(() => {
         if (active) setReady(true);
       });

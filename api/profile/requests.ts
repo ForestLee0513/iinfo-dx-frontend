@@ -9,18 +9,24 @@ import type {
   ProfileUpdateRequest,
 } from "./types";
 
+// handle에는 URL에서 의미를 갖는 문자가 포함될 수 있으므로 path segment로 안전하게
+// 인코딩한다. UUID는 인코딩 결과가 변하지 않는다.
+function profilePath(identifier: string) {
+  return `${PROFILE_BASE}/${encodeURIComponent(identifier)}`;
+}
+
 /*
 GET /api/v1/profile/{identifier}
 프로필 조회 (UUID 또는 handle) - Get Profile
 */
 export async function getProfile(identifier: string) {
-  const { data } = await api.get<ProfileResponse>(`${PROFILE_BASE}/${identifier}`);
+  const { data } = await api.get<ProfileResponse>(profilePath(identifier));
   return data;
 }
 
 /*
 PATCH /api/v1/profile/me
-내 프로필 수정 (handle/nickname/social_links/is_public) - Update My Profile
+내 프로필 수정 (플랫폼/서비스별 공개 여부 포함) - Update My Profile
 */
 export async function updateProfile(body: ProfileUpdateRequest) {
   const { data } = await api.patch<ProfileResponse>(PROFILE_ME_BASE, body);
@@ -32,7 +38,7 @@ POST /api/v1/profile/{identifier}/follow
 팔로우 - Follow User
 */
 export async function followUser(identifier: string) {
-  await api.post(`${PROFILE_BASE}/${identifier}/follow`);
+  await api.post(`${profilePath(identifier)}/follow`);
 }
 
 /*
@@ -40,7 +46,7 @@ DELETE /api/v1/profile/{identifier}/follow
 언팔로우 - Unfollow User
 */
 export async function unfollowUser(identifier: string) {
-  await api.delete(`${PROFILE_BASE}/${identifier}/follow`);
+  await api.delete(`${profilePath(identifier)}/follow`);
 }
 
 /*
@@ -49,7 +55,7 @@ GET /api/v1/profile/{identifier}/followers
 */
 export async function getFollowers(identifier: string, params?: FollowListParams) {
   const { data } = await api.get<FollowListResponse>(
-    `${PROFILE_BASE}/${identifier}/followers`,
+    `${profilePath(identifier)}/followers`,
     { params },
   );
   return data;
@@ -61,7 +67,7 @@ GET /api/v1/profile/{identifier}/following
 */
 export async function getFollowing(identifier: string, params?: FollowListParams) {
   const { data } = await api.get<FollowListResponse>(
-    `${PROFILE_BASE}/${identifier}/following`,
+    `${profilePath(identifier)}/following`,
     { params },
   );
   return data;
@@ -83,4 +89,12 @@ PATCH /api/v1/profile/iidx/me
 export async function updateIidxProfile(body: IidxProfileUpdateRequest) {
   const { data } = await api.patch<IidxProfileResponse>(PROFILE_IIDX_ME_BASE, body);
   return data;
+}
+
+/*
+DELETE /api/v1/profile/iidx/me
+IIDX 서비스 탈퇴 (서비스 데이터 삭제, 계정은 유지) - Withdraw Iidx Profile
+*/
+export async function withdrawIidxProfile() {
+  await api.delete(PROFILE_IIDX_ME_BASE);
 }

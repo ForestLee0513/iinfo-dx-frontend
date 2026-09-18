@@ -3,6 +3,8 @@ import {
   IIDX_SCORES_SNAPSHOTS_URL,
   IIDX_SCORES_SUMMARY_URL,
   IIDX_SCORES_TOKEN_URL,
+  IIDX_SCORES_UPDATE_CALENDAR_URL,
+  IIDX_SCORES_UPDATE_HISTORY_URL,
   IIDX_SCORES_UPLOAD_CALENDAR_URL,
   iidxScoresRestoreUrl,
 } from "./constants";
@@ -11,6 +13,10 @@ import type {
   RestoreResponse,
   ScoreSummaryParams,
   ScoreSummaryResponse,
+  ScoreUpdateCalendarParams,
+  ScoreUpdateCalendarResponse,
+  ScoreUpdateHistoryParams,
+  ScoreUpdateHistoryResponse,
   SnapshotListResponse,
   UploadCalendarParams,
   UploadCalendarResponse,
@@ -79,6 +85,42 @@ export async function getUploadCalendar({
   const { data } = await api.get<UploadCalendarResponse>(
     IIDX_SCORES_UPLOAD_CALENDAR_URL,
     { params: { identifier, style, since, until, days, tz } },
+  );
+  return data;
+}
+
+/*
+GET /api/v1/iidx/scores/update-calendar
+날짜별 실제 성적 갱신 채보 수 - Get Score Update Calendar
+*/
+export async function getScoreUpdateCalendar({
+  identifier,
+  style,
+  since,
+  until,
+  days,
+  tz,
+}: ScoreUpdateCalendarParams) {
+  const { data } = await api.get<ScoreUpdateCalendarResponse>(
+    IIDX_SCORES_UPDATE_CALENDAR_URL,
+    { params: { identifier, style, since, until, days, tz } },
+  );
+  return data;
+}
+
+/*
+GET /api/v1/iidx/scores/update-history
+성적 추가·갱신 이력 - Get Score Update History
+*/
+export async function getScoreUpdateHistory({
+  identifier,
+  style,
+  page,
+  per_page,
+}: ScoreUpdateHistoryParams) {
+  const { data } = await api.get<ScoreUpdateHistoryResponse>(
+    IIDX_SCORES_UPDATE_HISTORY_URL,
+    { params: { identifier, style, page, per_page } },
   );
   return data;
 }

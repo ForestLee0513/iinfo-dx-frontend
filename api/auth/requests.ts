@@ -1,44 +1,10 @@
 import { api, setAccessToken } from "@/lib/axios";
 import { AUTH_BASE, AUTH_OAUTH_PROVIDER_PROMPT } from "./constants";
 import type {
-  AuthLoginRequest,
-  AuthLoginResponse,
   AuthMyInfoResponse,
   AuthOAuthLoginRequest,
   AuthRefreshResponse,
-  AuthSignUpRequest,
-  AuthSignUpResponse,
 } from "./types";
-
-/*
-POST /api/v1/auth/login
-이메일 로그인 - Email Login
-성공 시 서버가 세션 쿠키를 설정한다 (withCredentials 필수)
-*/
-export async function loginWithEmail(body: AuthLoginRequest) {
-  const { data } = await api.post<AuthLoginResponse>(
-    `${AUTH_BASE}/login`,
-    body,
-  );
-  setAccessToken(data.session.access_token);
-  return data;
-}
-
-/*
-POST /api/v1/auth/signup
-이메일 회원가입 - Sign Up
-이메일 확인이 꺼져 있으면 session/user가 채워지고, 켜져 있으면 null로 온다.
-*/
-export async function signUp(body: AuthSignUpRequest) {
-  const { data } = await api.post<AuthSignUpResponse>(
-    `${AUTH_BASE}/signup`,
-    body,
-  );
-  if (data.session) {
-    setAccessToken(data.session.access_token);
-  }
-  return data;
-}
 
 /*
 GET /api/v1/auth/login/{provider}
@@ -92,5 +58,15 @@ POST /api/v1/auth/logout
 */
 export async function logout() {
   await api.post(`${AUTH_BASE}/logout`);
+  setAccessToken(null);
+}
+
+/*
+DELETE /api/v1/auth/me
+회원 탈퇴 (계정 영구 삭제) - Withdraw
+성공 시 서버가 refresh 쿠키를 함께 제거한다
+*/
+export async function withdrawAccount() {
+  await api.delete(`${AUTH_BASE}/me`);
   setAccessToken(null);
 }
