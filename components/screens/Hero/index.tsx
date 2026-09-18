@@ -32,19 +32,19 @@ export function Hero() {
   }
 
   return (
-    <section className="justify-center flex px-4 py-16 text-center md:py-20 xl:py-28 h-full">
-      <div className="flex flex-col md:max-w-[483px] gap-6 flex-1 ">
+    <section className="flex flex-1 justify-center px-4 py-16 text-center md:py-20">
+      <div className="flex w-full max-w-lg flex-col gap-6">
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
           IInfo DX
         </h1>
 
-        <p className="text-base leading-6 text-muted-foreground break-keep">
+        <p className="text-muted-foreground">
           beatmania IIDX의 비공식 난이도표를 쉽고 간편하게 관리할 수 있습니다.
           <br />
           e-Amusement 기반 데이터 연동, 프로필 생성 / 공유 기능을 제공합니다.
         </p>
 
-        <p className="text-xs leading-4 tracking-[0.32px] text-muted-foreground/80">
+        <p className="text-sm text-muted-foreground">
           해당 웹 서비스는 비공식 팬 사이트이며, ‘beatmania IIDX’의 권리는
           ‘Konami Amusement’의 소유입니다.
           <br />
