@@ -26,14 +26,14 @@ export function SyncGuide() {
           variant="outline"
           size="sm"
           nativeButton={false}
-          render={<Link href="/iidx/restore" />}
+          render={<Link href="/iidx/score-snapshots" />}
         >
           <IconHistory className="size-4" />
           복구하기
         </Button>
       </div>
 
-      <ServiceTabs iidxHref="/iidx/sync" className="mt-6">
+      <ServiceTabs iidxHref="/iidx/score-updates" className="mt-6">
         <Tabs defaultValue="pc">
           <TabsList variant="line">
             <TabsTrigger value="pc">PC</TabsTrigger>

@@ -91,7 +91,7 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
         히트맵 등)가 넓어지면 이 컬럼이 줄어들지 못하고 페이지 전체가 가로로
         밀린다 — min-w-0으로 풀어야 내부 overflow-x-auto가 실제로 스크롤을 맡는다. */}
         <div className="min-w-0 flex-1">
-          <ServiceTabs iidxHref={`/profile/${userId}/iidx`}>
+          <ServiceTabs iidxHref={`/iidx/profiles/${userId}`}>
             <IidxTabContent
               userId={ready ? userId : undefined}
               isOwnProfile={isOwnProfile}
