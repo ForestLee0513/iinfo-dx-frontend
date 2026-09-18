@@ -6,7 +6,7 @@ import { IconLink, IconPencil } from "@tabler/icons-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
-import type { OwnProfileSectionProps, ProfileSummary } from "../types";
+import type { ProfileSummary } from "../types";
 import { FollowButton } from "./FollowButton";
 
 export function ProfileIdentity({
@@ -19,7 +19,7 @@ export function ProfileIdentity({
   followersCount,
   followingCount,
   isOwnProfile,
-}: ProfileSummary & OwnProfileSectionProps) {
+}: ProfileSummary & { isOwnProfile: boolean }) {
   const initial = (handle ?? nickname ?? "?")
     .replace(/^@/, "")
     .charAt(0)

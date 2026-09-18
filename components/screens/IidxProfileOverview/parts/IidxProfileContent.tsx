@@ -13,16 +13,18 @@ import { IidxProfileActions } from "./IidxProfileActions";
 import { IidxProfileInfo } from "./IidxProfileInfo";
 import { UpdateHistory } from "./UpdateHistory";
 
-type IidxTabContentProps = {
-  userId: string | undefined;
+type IidxProfileContentProps = {
+  identifier: string;
   isOwnProfile: boolean;
 };
 
-// "IIDX" 탭 패널 — 서비스 프로필(IIDX) 조회는 이 탭 안에서만 이뤄진다. 공용 프로필
-// 조회(ProfileOverview)와 분리해뒀기 때문에, 여기서 404가 나도 사이드바/탭 구조 자체는
-// 그대로 유지된 채 탭 내용만 갱신 안내로 바뀐다.
-export function IidxTabContent({ userId, isOwnProfile }: IidxTabContentProps) {
-  const profile = useIidxProfileQuery(userId);
+// IIDX 서비스 데이터만 조회·표시한다. 공용 프로필은 ProfileLayout이 이미 보장하므로
+// IIDX 데이터가 없을 때도 이 콘텐츠 영역만 안내 화면으로 대체한다.
+export function IidxProfileContent({
+  identifier,
+  isOwnProfile,
+}: IidxProfileContentProps) {
+  const profile = useIidxProfileQuery(identifier);
 
   if (profile.isPending) {
     return (
@@ -58,13 +60,13 @@ export function IidxTabContent({ userId, isOwnProfile }: IidxTabContentProps) {
         profile={profile.data}
         actions={
           <IidxProfileActions
-            identifier={userId}
+            identifier={identifier}
             isOwnProfile={isOwnProfile}
           />
         }
       />
-      <ClearLampRatio userId={userId} />
-      <UpdateHistory userId={userId} />
+      <ClearLampRatio userId={identifier} />
+      <UpdateHistory userId={identifier} />
     </div>
   );
 }
