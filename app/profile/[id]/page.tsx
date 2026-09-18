@@ -1,12 +1,12 @@
-import { ProfileOverview } from "@/components/screens/ProfileOverview";
+import { redirect } from "next/navigation";
 
-// user_id는 백엔드 GET /api/v1/web/profile/{user_id}와 그대로 대응한다.
-// 본인 여부(isOwnProfile)는 ProfileOverview가 해당 API의 is_mine으로 직접 판정한다.
-export default async function ProfilePage({
+// 기존 공용 프로필 주소는 기본 서비스(IIDX) 탭으로 보낸다. 서비스 선택은 URL이
+// 기준이므로 공유·새로고침 시에도 선택한 서비스가 유지된다.
+export default async function ProfileRedirectPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <ProfileOverview userId={id} />;
+  redirect(`/profile/${encodeURIComponent(id)}/iidx`);
 }

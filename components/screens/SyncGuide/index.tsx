@@ -33,7 +33,7 @@ export function SyncGuide() {
         </Button>
       </div>
 
-      <ServiceTabs className="mt-6">
+      <ServiceTabs iidxHref="/iidx/sync" className="mt-6">
         <Tabs defaultValue="pc">
           <TabsList variant="line">
             <TabsTrigger value="pc">PC</TabsTrigger>
