@@ -9,6 +9,7 @@ import { useIidxProfileQuery } from "@/api/profile/queries";
 import { ClearLampRatio } from "./ClearLampRatio";
 import { IidxNotSyncedNotice } from "./IidxNotSyncedNotice";
 import { IidxOnboardingBanner } from "./IidxOnboardingBanner";
+import { IidxProfileInfo } from "./IidxProfileInfo";
 import { UpdateHistory } from "./UpdateHistory";
 
 type IidxTabContentProps = {
@@ -44,7 +45,7 @@ export function IidxTabContent({ userId, isOwnProfile }: IidxTabContentProps) {
   if (profile.isError) {
     return (
       <Alert variant="destructive">
-        <AlertTitle>IIDX 정보를 불러오지 못했습니다</AlertTitle>
+        <AlertTitle>IIDX 플레이 정보를 불러오지 못했습니다</AlertTitle>
         <AlertDescription>잠시 후 다시 시도해주세요.</AlertDescription>
       </Alert>
     );
@@ -52,6 +53,7 @@ export function IidxTabContent({ userId, isOwnProfile }: IidxTabContentProps) {
 
   return (
     <div className="flex flex-col gap-6">
+      <IidxProfileInfo profile={profile.data} />
       <ClearLampRatio userId={userId} />
       <UpdateHistory userId={userId} />
     </div>
