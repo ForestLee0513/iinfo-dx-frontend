@@ -55,7 +55,7 @@ export function Header() {
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger
               aria-label="메뉴 열기"
-              render={<Button variant="outline" size="icon" />}
+              render={<Button variant="ghost" size="icon-sm" />}
             >
               <IconMenu2 className="size-5" />
             </SheetTrigger>

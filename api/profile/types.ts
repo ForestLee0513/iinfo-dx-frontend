@@ -46,6 +46,34 @@ export interface ProfileResponse {
 }
 
 /*
+GET /api/v1/profile/search
+서비스별 공개 프로필 자동완성 검색 - Search Profiles
+*/
+export type ProfileSearchService = "iidx" | "iinfo_dx";
+
+export interface ProfileSearchParams {
+  q: string;
+  service: ProfileSearchService;
+  limit?: number;
+}
+
+export interface ProfileSearchSuggestion {
+  id: string;
+  handle: string | null;
+  nickname: string | null;
+  dj_name: string | null;
+  dj_id: string | null;
+  profile_image_url: string | null;
+  profile_path: string;
+}
+
+export interface ProfileSearchResponse {
+  query: string;
+  service: ProfileSearchService;
+  results: ProfileSearchSuggestion[];
+}
+
+/*
 POST /api/v1/profile/{identifier}/follow
 팔로우 - Follow User
 이미 팔로우 중이면 그대로 성공(멱등) — 204 No Content
