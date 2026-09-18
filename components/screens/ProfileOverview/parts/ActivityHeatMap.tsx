@@ -17,12 +17,12 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { useUploadCalendarQuery } from "@/api/iidxScores/queries";
+import { useScoreUpdateCalendarQuery } from "@/api/iidxScores/queries";
 import type { ActivityHeatMapValue } from "../types";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
-// GET /api/v1/iidx/scores/upload-calendar가 이제 since/until(YYYY-MM-DD, tz
+// GET /api/v1/iidx/scores/update-calendar가 since/until(YYYY-MM-DD, tz
 // 기준)을 직접 받는다 — 선택한 연도의 1/1~12/31을 그대로 넘겨 연도 경계에 정확히
 // 맞춘 데이터를 받는다(연도를 바꾸면 쿼리 키가 달라져 새로 조회된다).
 function getYearRangeParams(year: number) {
@@ -31,13 +31,6 @@ function getYearRangeParams(year: number) {
     until: `${year}-12-31`,
   };
 }
-
-// 연도별 활동 조회 API가 아직 없어 최근 5개년 고정 목록으로 선택지를 채운다.
-const SELECTABLE_YEAR_COUNT = 5;
-const SELECTABLE_YEARS = Array.from(
-  { length: SELECTABLE_YEAR_COUNT },
-  (_, idx) => CURRENT_YEAR - idx,
-);
 
 // 선택한 해의 1월 1일 ~ 12월 31일을 기준점으로 잡는다 — "오늘" 기준 롤링 365일이 아니라
 // 캘린더가 쓰는 것과 동일한 연도 경계에 맞춘다.
@@ -142,29 +135,37 @@ export function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
   const { startDate, endDate } = getHeatMapDateRangeForYear(year);
   const heatMapContainerRef = useRef<HTMLDivElement>(null);
 
-  const uploadCalendar = useUploadCalendarQuery({
+  const updateCalendar = useScoreUpdateCalendarQuery({
     identifier: userId,
     ...getYearRangeParams(year),
     // 서버가 날짜 경계를 이 타임존(zoneinfo, 서머타임 자동 반영) 기준으로 잡아
     // 날짜별 집계까지 마쳐서 내려준다 — FE는 사용자의 로컬 타임존만 넘기면 된다.
     tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
+  const availableYears = updateCalendar.data?.available_years ?? [];
 
   const countByDate = new Map(
-    Object.entries(uploadCalendar.data?.days ?? {}).map(([date, count]) => [
+    Object.entries(updateCalendar.data?.days ?? {}).map(([date, counts]) => [
       date.replaceAll("-", "/"),
-      count,
+      counts,
     ]),
   );
-  const values: ActivityHeatMapValue[] = getYearDates(year).map((date) => ({
-    date,
-    count: countByDate.get(date) ?? 0,
-  }));
+  const values: ActivityHeatMapValue[] = getYearDates(year).map((date) => {
+    const counts = countByDate.get(date);
+    return {
+      date,
+      count: counts?.total ?? 0,
+      added: counts?.added ?? 0,
+      updated: counts?.updated ?? 0,
+    };
+  });
 
   // items를 넘기지 않으면 <SelectValue />가 선택된 항목의 라벨("2026년") 대신
   // 저장된 원시 value 문자열("2026")을 그대로 렌더링한다.
   const yearItems: Record<string, string> = Object.fromEntries(
-    SELECTABLE_YEARS.map((y) => [String(y), `${y}년`]),
+    // 현재 연도에 이력이 없더라도 선택된 값의 라벨은 유지한다. 실제 드롭다운
+    // 항목은 아래 availableYears만 사용하므로 서버가 알려준 범위만 노출된다.
+    [...new Set([year, ...availableYears])].map((y) => [String(y), `${y}년`]),
   );
 
   // 라이브러리가 매 렌더마다 viewBox를 다시 계산해 덮어쓰므로 렌더 이후 매번 보정한다.
@@ -186,11 +187,11 @@ export function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
           value={String(year)}
           onValueChange={(value) => setYear(Number(value ?? CURRENT_YEAR))}
         >
-          <SelectTrigger size="sm" className="w-24">
+          <SelectTrigger size="sm" className="w-24" disabled={availableYears.length === 0}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {SELECTABLE_YEARS.map((y) => (
+            {availableYears.map((y) => (
               <SelectItem key={y} value={String(y)}>
                 {`${y}년`}
               </SelectItem>
@@ -199,16 +200,16 @@ export function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
         </Select>
       </div>
 
-      {uploadCalendar.isPending ? (
+      {updateCalendar.isPending ? (
         <Skeleton className="h-36 w-full" />
-      ) : uploadCalendar.isError ? (
+      ) : updateCalendar.isError ? (
         <p className="text-sm text-muted-foreground">
-          활동 기여도를 불러오지 못했습니다.
+          성적 갱신 기여도를 불러오지 못했습니다.
         </p>
       ) : (
         <div
           ref={heatMapContainerRef}
-          className="overflow-x-auto rounded-md border p-4
+          className="overflow-x-auto rounded-lg border p-3
             [&_svg.react-calendar-heatmap]:min-h-36 [&_svg.react-calendar-heatmap]:w-auto
             [&_rect:hover]:stroke-1 [&_rect:hover]:stroke-foreground
             [&_text]:fill-muted-foreground [&_text]:text-[10px]"
@@ -249,10 +250,17 @@ export function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
       {hoveredCell && (
         <div
           className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-[calc(100%+8px)]
-            rounded-md border bg-popover px-2 py-1 text-xs whitespace-nowrap text-popover-foreground shadow-sm"
+            rounded-md border bg-popover px-3 py-2 text-xs whitespace-nowrap text-popover-foreground shadow-sm"
           style={{ left: hoveredCell.x, top: hoveredCell.y }}
         >
-          {`${hoveredCell.value.date} · ${hoveredCell.value.count}건`}
+          <p className="font-medium">{hoveredCell.value.date}</p>
+          <p className="mt-1 text-muted-foreground">
+            총 {hoveredCell.value.count}개 채보
+          </p>
+          <div className="mt-1 flex gap-3">
+            <span>신규 {hoveredCell.value.added}</span>
+            <span>갱신 {hoveredCell.value.updated}</span>
+          </div>
         </div>
       )}
     </div>

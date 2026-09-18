@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
+import { iidxScoresKeys } from "@/api/iidxScores/queries";
 import {
   followUser,
   getFollowers,
@@ -14,6 +15,7 @@ import {
   unfollowUser,
   updateIidxProfile,
   updateProfile,
+  withdrawIidxProfile,
 } from "./requests";
 import type {
   FollowListParams,
@@ -33,6 +35,13 @@ export const profileKeys = {
   following: (identifier: string) =>
     [...profileKeys.detail(identifier), "following"] as const,
 };
+
+function followListParams(params?: FollowListParams) {
+  return {
+    page: params?.page ?? 1,
+    per_page: params?.per_page ?? 20,
+  };
+}
 
 export const iidxProfileKeys = {
   all: ["iidxProfile"] as const,
@@ -96,13 +105,18 @@ export function useIidxProfileQuery(identifier: string | undefined) {
 GET /api/v1/profile/{identifier}/followers
 팔로워 목록 - Get Followers
 */
-export function useFollowersQuery(
-  identifier: string | undefined,
-  params?: FollowListParams,
-) {
+export function followersQueryOptions(identifier: string, params?: FollowListParams) {
+  const queryParams = followListParams(params);
+
+  return queryOptions({
+    queryKey: [...profileKeys.followers(identifier), queryParams],
+    queryFn: () => getFollowers(identifier, queryParams),
+  });
+}
+
+export function useFollowersQuery(identifier: string | undefined, params?: FollowListParams) {
   return useQuery({
-    queryKey: [...(profileKeys.followers(identifier ?? "")), params],
-    queryFn: () => getFollowers(identifier!, params),
+    ...followersQueryOptions(identifier ?? "", params),
     enabled: Boolean(identifier),
   });
 }
@@ -111,20 +125,25 @@ export function useFollowersQuery(
 GET /api/v1/profile/{identifier}/following
 팔로잉 목록 - Get Following
 */
-export function useFollowingQuery(
-  identifier: string | undefined,
-  params?: FollowListParams,
-) {
+export function followingQueryOptions(identifier: string, params?: FollowListParams) {
+  const queryParams = followListParams(params);
+
+  return queryOptions({
+    queryKey: [...profileKeys.following(identifier), queryParams],
+    queryFn: () => getFollowing(identifier, queryParams),
+  });
+}
+
+export function useFollowingQuery(identifier: string | undefined, params?: FollowListParams) {
   return useQuery({
-    queryKey: [...(profileKeys.following(identifier ?? "")), params],
-    queryFn: () => getFollowing(identifier!, params),
+    ...followingQueryOptions(identifier ?? "", params),
     enabled: Boolean(identifier),
   });
 }
 
 /*
 PATCH /api/v1/profile/me
-내 프로필 수정 (handle/nickname/social_links/is_public) - Update My Profile
+내 프로필 수정 (플랫폼/서비스별 공개 여부 포함) - Update My Profile
 
 identifier는 현재 조회 중인 프로필의 쿼리 키(useProfileQuery에 넘긴 값과 동일해야
 한다) — 저장 성공 시 그 캐시만 갱신한다. me API 응답이라 다른 identifier(예: 변경
@@ -164,6 +183,38 @@ export function useUpdateIidxProfileMutation(identifier: string) {
 }
 
 /*
+DELETE /api/v1/profile/iidx/me
+IIDX 서비스 탈퇴 (서비스 데이터 삭제, 계정은 유지) - Withdraw Iidx Profile
+
+IIDX 프로필 캐시는 완전히 비우고(온보딩 이전 상태로), base 프로필 캐시의
+joined_services에서 "iidx"만 제거한다 — 204라 갱신된 프로필을 다시 내려주지 않는다.
+성적 요약/기여도 그래프/스냅샷 목록(iidxScoresKeys) 역시 이 identifier의 IIDX
+데이터라 함께 비우지 않으면, 같은 identifier로 재온보딩했을 때 삭제 전 성적이
+재조회 전까지 잠깐 그대로 보인다.
+*/
+export function useWithdrawIidxProfileMutation(identifier: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: withdrawIidxProfile,
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: iidxProfileKeys.detail(identifier) });
+      queryClient.removeQueries({ queryKey: iidxScoresKeys.all });
+      queryClient.setQueryData<ProfileResponse>(profileKeys.detail(identifier), (prev) =>
+        prev
+          ? {
+              ...prev,
+              joined_services: prev.joined_services.filter(
+                (service) => service !== "iidx",
+              ),
+            }
+          : prev,
+      );
+    },
+  });
+}
+
+/*
 POST/DELETE /api/v1/profile/{identifier}/follow
 팔로우/언팔로우 - Follow/Unfollow User
 
@@ -198,6 +249,7 @@ export function useToggleFollowMutation(identifier: string) {
       queryClient.setQueryData<IidxProfileResponse>(iidxProfileKeys.detail(identifier), (prev) =>
         patchFollowState(prev, nextFollowing),
       );
+      queryClient.invalidateQueries({ queryKey: profileKeys.followers(identifier) });
     },
   });
 }

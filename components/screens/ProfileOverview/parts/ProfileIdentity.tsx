@@ -1,19 +1,23 @@
+"use client";
+
 import Link from "next/link";
-import { IconArrowsExchange, IconHistory, IconLink } from "@tabler/icons-react";
+import {
+  IconArrowsExchange,
+  IconHistory,
+  IconLink,
+  IconPencil,
+} from "@tabler/icons-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 import type { OwnProfileSectionProps, ProfileSummary } from "../types";
 import { FollowButton } from "./FollowButton";
-import { ProfileEditDialog } from "./ProfileEditDialog";
 
 export function ProfileIdentity({
   identifier,
   handle,
   nickname,
-  djName,
-  djId,
   socialLinks,
   profileImageUrl,
   isFollowing,
@@ -21,16 +25,15 @@ export function ProfileIdentity({
   followingCount,
   isOwnProfile,
 }: ProfileSummary & OwnProfileSectionProps) {
-  const initial = (handle ?? nickname ?? djName ?? "?")
+  const initial = (handle ?? nickname ?? "?")
     .replace(/^@/, "")
     .charAt(0)
     .toUpperCase();
-  const djLabel = djName ? (djId ? `${djName} (${djId})` : djName) : "미등록";
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center xl:flex-col! xl:items-start">
-        <Avatar className="size-32 shrink-0 sm:size-28 md:size-36 xl:size-56">
+        <Avatar className="size-24 shrink-0 sm:size-32 xl:size-56">
           {profileImageUrl && (
             <AvatarImage
               src={profileImageUrl}
@@ -40,28 +43,33 @@ export function ProfileIdentity({
           <AvatarFallback className="text-2xl">{initial}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold sm:text-2xl">
+          <h2 className="text-lg font-semibold sm:text-xl xl:text-2xl">
             {nickname ?? (handle ? `@${handle}` : "닉네임 미설정")}
           </h2>
           {handle && (
             <p className="text-sm text-muted-foreground">@{handle}</p>
           )}
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <span>
+            <Link
+              href={`/profile/${identifier}/followers`}
+              className="hover:text-foreground"
+            >
               <span className="font-semibold text-foreground">
                 {followersCount}
               </span>{" "}
               팔로워
-            </span>
-            <span>
+            </Link>
+            <Link
+              href={`/profile/${identifier}/following`}
+              className="hover:text-foreground"
+            >
               <span className="font-semibold text-foreground">
                 {followingCount}
               </span>{" "}
               팔로잉
-            </span>
+            </Link>
           </div>
           <div className="space-y-0.5 text-sm text-muted-foreground">
-            <p>DJ NAME: {djLabel}</p>
             {socialLinks.map((link) => (
               <p
                 key={`${link.platform}-${link.url}`}
@@ -97,12 +105,16 @@ export function ProfileIdentity({
       )}
       {isOwnProfile && (
         <>
-          <ProfileEditDialog
-            identifier={identifier}
-            handle={handle}
-            nickname={nickname}
-            socialLinks={socialLinks}
-          />
+          {/* 프로필 수정 폼은 /settings(정보 변경/닉네임 변경 탭)로 이동했다 */}
+          <Button
+            variant="outline"
+            className="w-full justify-between"
+            nativeButton={false}
+            render={<Link href="/settings" />}
+          >
+            프로필 수정
+            <IconPencil className="size-4" />
+          </Button>
           {/* 본인 프로필에서만 노출 — 지난 성적 스냅샷으로 복구하는 페이지로 이동 */}
           <Button
             variant="outline"

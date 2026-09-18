@@ -1,42 +1,47 @@
 "use client";
 
-import { isAxiosError } from "axios";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { useIidxProfileQuery, useProfileQuery } from "@/api/profile/queries";
+import { useProfileQuery } from "@/api/profile/queries";
 import { useAuthReady } from "@/providers/AuthReadyContext";
-import { ClearLampRatio } from "./parts/ClearLampRatio";
-// import { DifficultyProgress } from "./parts/DifficultyProgress";
-import { HandleOnboardingBanner } from "./parts/HandleOnboardingBanner";
-import { IidxOnboardingBanner } from "./parts/IidxOnboardingBanner";
+import { IidxTabContent } from "./parts/IidxTabContent";
 import { ProfileIdentity } from "./parts/ProfileIdentity";
-import { UpdateHistory } from "./parts/UpdateHistory";
 import type { ProfileOverviewProps } from "./types";
 
 const CONTAINER_CLASS_NAME =
-  "mx-auto w-full max-w-[1440px] px-4 py-8 md:px-6 xl:px-12! xl:py-12";
+  "mx-auto w-full max-w-[1440px] px-3 py-4 sm:px-6 sm:py-10 xl:px-12! xl:py-12";
 
 // Figma 프로필 화면(1920/1280/320 너비 목업)을 하나의 반응형 레이아웃으로 구현한다.
 // xl 미만에서는 단일 컬럼으로 쌓이고, xl 이상에서 프로필 정보가 좌측 사이드바로 분리된다.
 //
-// 프로필 조회/수정 API는 identity 영역(handle/nickname/DJ NAME·ID/소셜 링크/프로필
-// 이미지)까지 커버한다. 난이도 통계는 대응하는 API가 아직 없어 목업을 유지한다.
+// 공용 프로필(useProfileQuery)이 기준 데이터다 — 이전에는 IIDX 프로필을 기준으로 조회해
+// IIDX 데이터가 없는 사용자는 공용 프로필(사이드바)조차 볼 수 없었다. 서비스별 프로필
+// 조회는 콘텐츠 영역의 탭(IidxTabContent)으로 분리해, 특정 서비스에 데이터가 없어도
+// 사이드바와 탭 구조는 항상 렌더된다. 서비스가 늘어나면 TabsTrigger/TabsContent만 추가하면 된다.
 export function ProfileOverview({ userId }: ProfileOverviewProps) {
   // 세션 복원(/refresh)이 끝나기 전에 조회하면 Authorization 없이 나가 is_mine이
   // 항상 false로 캐시된다 — AuthProvider 부트스트랩이 끝난 뒤에만 요청한다.
   const ready = useAuthReady();
-  const profile = useIidxProfileQuery(ready ? userId : undefined);
+  const router = useRouter();
+  const profile = useProfileQuery(ready ? userId : undefined);
 
-  // IIDX 프로필 404 시 — 유저 자체가 없는 경우와 미온보딩을 구분하기 위해 base 프로필을 추가로 조회한다.
-  const iidxNotFound =
-    profile.isError &&
-    isAxiosError(profile.error) &&
-    profile.error.response?.status === 404;
-  const baseProfile = useProfileQuery(iidxNotFound ? userId : undefined);
+  // 본인 프로필 + 핸들 미등록 → 온보딩으로 이동. is_mine으로 판정하므로 로그인 후
+  // 타인의 프로필만 잠깐 둘러보는 경우(자신의 프로필을 조회하지 않는 한)에는 걸리지 않는다.
+  const needsOnboarding =
+    profile.isSuccess && profile.data.is_mine && !profile.data.handle;
 
-  if (profile.isPending) {
+  useEffect(() => {
+    if (needsOnboarding) {
+      router.replace("/onboarding");
+    }
+  }, [needsOnboarding, router]);
+
+  if (profile.isPending || needsOnboarding) {
     return (
       <div className={CONTAINER_CLASS_NAME}>
         <Skeleton className="h-10 w-32" />
@@ -49,37 +54,12 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
   }
 
   if (profile.isError) {
-    // IIDX 404 + base 프로필 조회 중 → 스켈레톤으로 대기
-    if (iidxNotFound && baseProfile.isPending) {
-      return (
-        <div className={CONTAINER_CLASS_NAME}>
-          <Skeleton className="h-48 w-full" />
-        </div>
-      );
-    }
-
-    // IIDX 404 + 본인 프로필 → 미온보딩 상태
-    if (iidxNotFound && baseProfile.isSuccess && baseProfile.data.is_mine) {
-      return (
-        <div className={CONTAINER_CLASS_NAME}>
-          <IidxOnboardingBanner />
-        </div>
-      );
-    }
-
-    // 그 외(base 프로필도 없거나 네트워크 오류 등)
     return (
       <div className={CONTAINER_CLASS_NAME}>
         <Alert variant="destructive">
-          <AlertTitle>
-            {iidxNotFound
-              ? "프로필을 찾을 수 없습니다"
-              : "프로필을 불러오지 못했습니다"}
-          </AlertTitle>
+          <AlertTitle>프로필을 찾을 수 없습니다</AlertTitle>
           <AlertDescription>
-            {iidxNotFound
-              ? "존재하지 않거나 비공개로 설정된 프로필입니다."
-              : "잠시 후 다시 시도해주세요."}
+            존재하지 않거나 비공개로 설정된 프로필입니다.
           </AlertDescription>
         </Alert>
       </div>
@@ -92,20 +72,12 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
     <div className={CONTAINER_CLASS_NAME}>
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">프로필</h1>
 
-      {isOwnProfile && !profile.data.handle && (
-        <div className="mt-6">
-          <HandleOnboardingBanner identifier={userId} />
-        </div>
-      )}
-
       <div className="mt-8 flex flex-col gap-10 xl:flex-row! xl:items-start xl:gap-16">
         <div className="xl:w-80 xl:shrink-0">
           <ProfileIdentity
             identifier={userId}
             handle={profile.data.handle}
             nickname={profile.data.nickname}
-            djName={profile.data.dj_name}
-            djId={profile.data.dj_id}
             socialLinks={profile.data.social_links}
             profileImageUrl={profile.data.profile_image_url}
             isFollowing={profile.data.is_following}
@@ -118,10 +90,23 @@ export function ProfileOverview({ userId }: ProfileOverviewProps) {
         {/* min-w-0: flex 아이템의 기본 min-width는 auto라 내부 콘텐츠(기여도
         히트맵 등)가 넓어지면 이 컬럼이 줄어들지 못하고 페이지 전체가 가로로
         밀린다 — min-w-0으로 풀어야 내부 overflow-x-auto가 실제로 스크롤을 맡는다. */}
-        <div className="flex min-w-0 flex-1 flex-col gap-10">
-          {/* <DifficultyProgress isOwnProfile={isOwnProfile} /> */}
-          <ClearLampRatio userId={ready ? userId : undefined} />
-          <UpdateHistory userId={ready ? userId : undefined} />
+        <div className="min-w-0 flex-1">
+          <Tabs defaultValue="iidx">
+            <TabsList className="h-8 rounded-lg p-0.5">
+              <TabsTrigger value="iidx" className="h-7 rounded-lg px-2 py-1">
+                IIDX
+              </TabsTrigger>
+              <TabsTrigger value="sdvx" disabled className="h-7 rounded-lg px-2 py-1">
+                추가 예정
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="iidx" className="mt-10">
+              <IidxTabContent
+                userId={ready ? userId : undefined}
+                isOwnProfile={isOwnProfile}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

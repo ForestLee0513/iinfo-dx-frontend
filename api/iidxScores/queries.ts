@@ -1,5 +1,6 @@
 import {
   queryOptions,
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -8,6 +9,8 @@ import {
 import {
   createUploadToken,
   getScoreSummary,
+  getScoreUpdateCalendar,
+  getScoreUpdateHistory,
   getSnapshots,
   getUploadCalendar,
   restoreSnapshot,
@@ -15,6 +18,8 @@ import {
 import type {
   IidxPlayStyle,
   ScoreSummaryParams,
+  ScoreUpdateCalendarParams,
+  ScoreUpdateHistoryParams,
   UploadCalendarParams,
 } from "./types";
 
@@ -47,6 +52,37 @@ export const iidxScoresKeys = {
       until ?? "default",
       days ?? "default",
       tz ?? "UTC",
+    ] as const,
+  // 실제 성적 갱신 채보 수는 업로드 횟수와 의미가 달라 별도 캐시로 분리한다.
+  updateCalendar: (
+    identifier: string,
+    style: IidxPlayStyle | undefined,
+    since: string | undefined,
+    until: string | undefined,
+    days: number | undefined,
+    tz: string | undefined,
+  ) =>
+    [
+      ...iidxScoresKeys.all,
+      "updateCalendar",
+      identifier,
+      style ?? "all",
+      since ?? "default",
+      until ?? "default",
+      days ?? "default",
+      tz ?? "UTC",
+    ] as const,
+  updateHistory: (
+    identifier: string,
+    style: IidxPlayStyle | undefined,
+    perPage: number | undefined,
+  ) =>
+    [
+      ...iidxScoresKeys.all,
+      "updateHistory",
+      identifier,
+      style ?? "all",
+      perPage ?? "default",
     ] as const,
 };
 
@@ -141,5 +177,65 @@ export function useUploadCalendarQuery(
   return useQuery({
     ...uploadCalendarQueryOptions({ ...params, identifier: params.identifier ?? "" }),
     enabled: Boolean(params.identifier),
+  });
+}
+
+/*
+GET /api/v1/iidx/scores/update-calendar
+날짜별 실제 성적 갱신 채보 수 - Get Score Update Calendar
+*/
+export function scoreUpdateCalendarQueryOptions({
+  identifier,
+  style,
+  since,
+  until,
+  days,
+  tz,
+}: ScoreUpdateCalendarParams) {
+  return queryOptions({
+    queryKey: iidxScoresKeys.updateCalendar(identifier, style, since, until, days, tz),
+    queryFn: () => getScoreUpdateCalendar({ identifier, style, since, until, days, tz }),
+  });
+}
+
+// identifier가 아직 없으면(프로필 조회 전 등) 쿼리를 비활성화한다.
+export function useScoreUpdateCalendarQuery(
+  params: Omit<ScoreUpdateCalendarParams, "identifier"> & {
+    identifier: string | undefined;
+  },
+) {
+  return useQuery({
+    ...scoreUpdateCalendarQueryOptions({ ...params, identifier: params.identifier ?? "" }),
+    enabled: Boolean(params.identifier),
+  });
+}
+
+/*
+GET /api/v1/iidx/scores/update-history
+성적 추가·갱신 이력 - Get Score Update History
+
+"더 불러오기"가 이전 페이지를 유지한 채 다음 페이지를 이어 붙일 수 있도록
+무한 쿼리로 관리한다.
+*/
+export function useScoreUpdateHistoryInfiniteQuery(
+  params: Omit<ScoreUpdateHistoryParams, "identifier" | "page"> & {
+    identifier: string | undefined;
+  },
+) {
+  const { identifier, style, per_page } = params;
+
+  return useInfiniteQuery({
+    queryKey: iidxScoresKeys.updateHistory(identifier ?? "", style, per_page),
+    queryFn: ({ pageParam }) =>
+      getScoreUpdateHistory({
+        identifier: identifier ?? "",
+        style,
+        per_page,
+        page: pageParam,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,
+    enabled: Boolean(identifier),
   });
 }
