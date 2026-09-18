@@ -1,6 +1,6 @@
 "use client";
 
-import { ProfileLayout } from "@/components/common/ProfileLayout";
+import { ProfileLayout } from "@/components/screens/Profile";
 import { ServiceTabs } from "@/components/common/ServiceTabs";
 import { IidxProfileContent } from "./parts/IidxProfileContent";
 
