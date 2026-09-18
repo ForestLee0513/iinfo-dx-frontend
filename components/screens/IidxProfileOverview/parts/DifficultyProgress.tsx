@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 
 import { DIFFICULTY_STATS } from "../constants";
-import type { OwnProfileSectionProps } from "../types";
 import { StatCard } from "./StatCard";
 
-export function DifficultyProgress({ isOwnProfile }: OwnProfileSectionProps) {
+type DifficultyProgressProps = {
+  isOwnProfile: boolean;
+};
+
+export function DifficultyProgress({ isOwnProfile }: DifficultyProgressProps) {
   return (
     <section className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-4">
