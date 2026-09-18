@@ -1,4 +1,4 @@
-import { IidxProfileOverview } from "@/components/screens/IidxProfileOverview";
+import { IidxProfileOverview } from "@/components/screens/Profile/iidx";
 
 // IIDX 서비스 프로필. user_id는 백엔드 프로필 API의 식별자와 대응한다.
 export default async function IidxProfilePage({

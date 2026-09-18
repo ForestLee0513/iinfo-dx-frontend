@@ -28,6 +28,26 @@ For components that own local state, add two more folders:
  ┗ 📂hooks       # hooks used only inside this component
 ```
 
+When a screen has a platform-level shell plus service-specific content, nest the
+services under the screen domain instead of making each service a separate
+top-level screen. This keeps the shared and service boundaries visible and
+allows a new service to be added without reshaping the screen tree:
+
+```
+📂components/screens/Profile
+ ┣ 📜index.tsx       # platform profile layout and identity
+ ┣ 📂parts           # platform-only profile parts
+ ┣ 📂iidx            # IIDX profile content, data, and actions
+ ┃ ┣ 📜index.tsx
+ ┃ ┗ 📂parts
+ ┗ 📂sdvx            # future SDVX profile content
+```
+
+The parent owns only platform-wide UI and state; each service child owns its
+service query, fields, actions, and empty/error states. Keep this hierarchy in
+`screens/` while it is used by one route; move a genuinely cross-route piece to
+`common/` only when it is shared outside that screen domain.
+
 - **Scope decides placement.** Shared across screens → global (repo-level `hooks/`, `contexts/`, or a global `components/`); used only inside one component → that component's local `parts/` `hooks/` `contexts/`. Same rule for every subfolder.
 - **`index.tsx` is the container.** For stateful components it owns state + providers and delegates rendering to `parts/`; `parts/` consumes state (via Context/hooks) and holds none of its own — keep the "owns state (index) ↔ consumes state (parts)" boundary clean.
 - **`types.ts` is the component's index** — reading it alone should reveal what the component takes and exposes, without opening the implementation.
