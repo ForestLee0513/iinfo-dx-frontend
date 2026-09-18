@@ -32,7 +32,7 @@ export function SnapshotRestore() {
         지난 갱신 이력 중 원하는 시점을 선택해 현재 성적으로 복구할 수 있습니다.
       </p>
 
-      <ServiceTabs className="mt-6">
+      <ServiceTabs iidxHref="/iidx/restore" className="mt-6">
         <Tabs defaultValue={IIDX_PLAY_STYLE.SP}>
         <TabsList variant="line">
           <TabsTrigger value={IIDX_PLAY_STYLE.SP}>SP</TabsTrigger>
