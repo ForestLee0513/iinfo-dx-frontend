@@ -1,4 +1,5 @@
 export const PROFILE_BASE = "/api/v1/profile";
+export const PROFILE_SEARCH_BASE = `${PROFILE_BASE}/search`;
 export const PROFILE_ME_BASE = `${PROFILE_BASE}/me`;
 export const PROFILE_IIDX_BASE = `${PROFILE_BASE}/iidx`;
 export const PROFILE_IIDX_ME_BASE = `${PROFILE_IIDX_BASE}/me`;
