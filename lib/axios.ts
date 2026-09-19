@@ -4,8 +4,13 @@ import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { AUTH_BASE } from "@/api/auth/constants";
 import type { AuthRefreshResponse } from "@/api/auth/types";
 
+const DEFAULT_API_BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://iinfo-dx-api.forestlee.me"
+    : "http://localhost:8000";
+
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+  process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_BASE_URL;
 
 const REFRESH_URL = `${AUTH_BASE}/refresh`;
 const LOGIN_URL_PREFIX = `${AUTH_BASE}/login`;
