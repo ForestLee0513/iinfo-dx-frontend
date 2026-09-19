@@ -63,14 +63,20 @@ export function DesktopAuthActions() {
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="font-normal">
-            <span className="block max-w-48 truncate text-sm">{myInfo.data.email}</span>
+            <span className="block max-w-48 truncate text-sm">
+              {myInfo.data.email}
+            </span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {/* Menu.Item의 render로 <a>를 넘겨 메뉴 항목 시맨틱을 유지한 채 링크로 이동한다(클릭 시 메뉴는 자동으로 닫힘). */}
-          <DropdownMenuItem render={<Link href={getProfileHref(myInfo.data.id)} />}>
+          <DropdownMenuItem
+            render={<Link href={getProfileHref(myInfo.data.id)} />}
+          >
             프로필
           </DropdownMenuItem>
-          <DropdownMenuItem render={<Link href={SETTINGS_HREF} />}>설정</DropdownMenuItem>
+          <DropdownMenuItem render={<Link href={SETTINGS_HREF} />}>
+            설정
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"

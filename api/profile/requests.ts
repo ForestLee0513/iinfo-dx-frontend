@@ -1,11 +1,19 @@
 import { api } from "@/lib/axios";
-import { PROFILE_BASE, PROFILE_IIDX_BASE, PROFILE_IIDX_ME_BASE, PROFILE_ME_BASE } from "./constants";
+import {
+  PROFILE_BASE,
+  PROFILE_IIDX_BASE,
+  PROFILE_IIDX_ME_BASE,
+  PROFILE_ME_BASE,
+  PROFILE_SEARCH_BASE,
+} from "./constants";
 import type {
   FollowListParams,
   FollowListResponse,
   IidxProfileResponse,
   IidxProfileUpdateRequest,
   ProfileResponse,
+  ProfileSearchParams,
+  ProfileSearchResponse,
   ProfileUpdateRequest,
 } from "./types";
 
@@ -21,6 +29,15 @@ GET /api/v1/profile/{identifier}
 */
 export async function getProfile(identifier: string) {
   const { data } = await api.get<ProfileResponse>(profilePath(identifier));
+  return data;
+}
+
+/*
+GET /api/v1/profile/search
+서비스별 공개 프로필 자동완성 검색 - Search Profiles
+*/
+export async function searchProfiles(params: ProfileSearchParams) {
+  const { data } = await api.get<ProfileSearchResponse>(PROFILE_SEARCH_BASE, { params });
   return data;
 }
 
