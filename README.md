@@ -36,6 +36,7 @@ Create a `.env.local` in the project root (usually git-ignored, since these valu
 
 | Variable | Example | Description |
 | --- | --- | --- |
+| `NEXT_PUBLIC_API_URL` | `https://api.example.com` | Backend base URL. When unset, production uses the public API and development uses `http://localhost:8000`. |
 | `NEXT_PUBLIC_BASE_PATH` | `/absproxy/3000` | Proxy path prefix. **When set**, enables `basePath`/`assetPrefix` and the entry redirect. Unset / empty / `"/"` → runs at root (default for production). |
 | `NEXT_PUBLIC_BASE_DEV_URL` | `code.example.com` | The **hostname** used to reach the dev server. Added to `allowedDevOrigins` so cross-origin dev requests (HMR WebSocket, etc.) are accepted. |
 
