@@ -49,8 +49,12 @@ export function Hero() {
           ‘Konami Amusement’의 소유입니다.
           <br />
           계속 진행함으로써{" "}
-          <Link href="#" className="text-primary underline underline-offset-2">
-            이용약관·개인정보 처리방침·데이터 정책
+          <Link href="/terms" className="text-primary underline underline-offset-2">
+            이용약관
+          </Link>
+          과{" "}
+          <Link href="/privacy" className="text-primary underline underline-offset-2">
+            개인정보 처리방침
           </Link>
           에 동의한 것으로 간주됩니다.
         </p>
