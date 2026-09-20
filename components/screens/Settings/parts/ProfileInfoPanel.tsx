@@ -76,6 +76,17 @@ export function ProfileInfoPanel({
   const updateProfile = useUpdateProfileMutation(identifier);
   const isHandleLocked = handle !== null;
 
+  // 닉네임을 공백으로 비워 저장하면 서버가 handle로 대체해 저장한다(백엔드
+  // fallback). 로컬 입력값은 useState 초기값으로 한 번만 세팅되므로, 저장 성공 후
+  // 갱신된 서버 값(nickname prop)을 놓치지 않도록 렌더 중에 동기화한다(리액트가
+  // 권장하는 "이전 렌더값 저장" 패턴 — useEffect의 setState는 리렌더가 한 번 더
+  // 발생해 저장 직후 화면이 잠깐 깜빡인다).
+  const [prevNickname, setPrevNickname] = useState(nickname);
+  if (nickname !== prevNickname) {
+    setPrevNickname(nickname);
+    setNicknameValue(nickname ?? "");
+  }
+
   function updateLink(index: number, patch: Partial<SocialLink>) {
     setSocialLinksError(null);
     setLinks((prev) =>
