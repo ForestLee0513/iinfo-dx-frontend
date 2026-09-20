@@ -38,7 +38,8 @@ export function Login({ error, redirect }: LoginProps) {
   const rawOAuthError = Array.isArray(error) ? error[0] : error;
   const [oauthErrorMessage] = useState(() =>
     rawOAuthError !== undefined
-      ? rawOAuthError.trim() || "소셜 로그인에 실패했습니다. 다시 시도해 주세요."
+      ? rawOAuthError.trim() ||
+        "소셜 로그인에 실패했습니다. 다시 시도해 주세요."
       : undefined,
   );
 
@@ -71,7 +72,12 @@ export function Login({ error, redirect }: LoginProps) {
     <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle className="text-xl">로그인</CardTitle>
-        <CardDescription>선호하는 플랫폼을 선택하여 로그인하세요.</CardDescription>
+        <CardDescription>
+          선호하는 플랫폼을 선택하여 로그인하세요.
+          <br />
+          소셜 로그인 시 없는 계정으로 로그인 시도할 경우 자동으로 계정이
+          생성됩니다.
+        </CardDescription>
       </CardHeader>
 
       <CardContent>
