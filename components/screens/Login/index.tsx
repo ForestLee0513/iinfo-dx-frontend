@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ComponentType } from "react";
+import Link from "next/link";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -104,6 +106,18 @@ export function Login({ error, redirect }: LoginProps) {
           })}
         </FieldGroup>
       </CardContent>
+
+      <CardFooter className="justify-center border-t pt-6 text-center text-xs text-muted-foreground">
+        로그인하면{" "}
+        <Link href="/terms" className="text-primary underline underline-offset-2">
+          이용약관
+        </Link>
+        과{" "}
+        <Link href="/privacy" className="text-primary underline underline-offset-2">
+          개인정보 처리방침
+        </Link>
+        에 동의한 것으로 간주됩니다.
+      </CardFooter>
     </Card>
   );
 }
