@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { pretendard, pretendardJP } from "@/styles/fonts";
 import { Toaster } from "@/components/ui/sonner";
 
+import { Footer } from "@/components/common/Footer";
 import { Header } from "@/components/common/Header";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { QueryProvider } from "@/providers/QueryProvider";
@@ -29,6 +30,7 @@ export default function RootLayout({
           <AuthProvider>
             <Header />
             {children}
+            <Footer />
             <Toaster />
           </AuthProvider>
         </QueryProvider>

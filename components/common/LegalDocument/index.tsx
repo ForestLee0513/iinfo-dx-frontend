@@ -34,17 +34,29 @@ export function LegalDocument({ content }: LegalDocumentProps) {
             ),
             table: ({ children }) => (
               <div className="mt-4 overflow-x-auto rounded-lg border">
-                <table className="w-full min-w-175 border-collapse text-left text-xs leading-6">
+                <table className="w-full min-w-175 border-collapse text-left text-xs leading-6 [&_tbody_tr:last-child>td]:border-b-0">
                   {children}
                 </table>
               </div>
+            ),
+            a: ({ children, href }) => (
+              <a
+                href={href}
+                target={href?.startsWith("http") ? "_blank" : undefined}
+                rel={
+                  href?.startsWith("http") ? "noopener noreferrer" : undefined
+                }
+                className="font-medium text-foreground underline underline-offset-2 hover:text-primary"
+              >
+                {children}
+              </a>
             ),
             thead: ({ children }) => <thead className="bg-muted">{children}</thead>,
             th: ({ children }) => (
               <th className="border-b px-3 py-2 font-semibold">{children}</th>
             ),
             td: ({ children }) => (
-              <td className="border-b px-3 py-2 align-top text-muted-foreground last:border-b-0">
+              <td className="border-b px-3 py-2 align-top text-muted-foreground">
                 {children}
               </td>
             ),
