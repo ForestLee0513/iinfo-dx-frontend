@@ -8,7 +8,10 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useScoreUpdateHistoryInfiniteQuery } from "@/api/iidxScores/queries";
-import type { ScoreUpdateHistoryItem } from "@/api/iidxScores/types";
+import type {
+  IidxPlayStyle,
+  ScoreUpdateHistoryItem,
+} from "@/api/iidxScores/types";
 import { ActivityHeatMap } from "./ActivityHeatMap";
 
 type UpdateHistoryProps = {
@@ -43,11 +46,12 @@ type UpdatesByDate = [string, ScoreUpdateHistoryItem[]][];
 type UpdateEventProps = {
   count: number;
   type: "added" | "updated";
+  playStyle: IidxPlayStyle;
 };
 
 // Figma의 40px 아이콘 + 한 줄 설명 이벤트다. 한 번의 동기화에 신규·갱신이
 // 함께 있으면 각 변화를 독립 행으로 보여줘 변경 성격을 바로 구분할 수 있다.
-function UpdateEvent({ count, type }: UpdateEventProps) {
+function UpdateEvent({ count, type, playStyle }: UpdateEventProps) {
   const isAdded = type === "added";
   const Icon = isAdded ? IconPlus : IconRefresh;
 
@@ -56,11 +60,14 @@ function UpdateEvent({ count, type }: UpdateEventProps) {
       <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
         <Icon className="size-6" aria-hidden />
       </span>
-      <p className="text-xs">
-        {isAdded
-          ? `${count}개의 클리어 기록 추가됨`
-          : `${count}개의 클리어 기록이 갱신됨`}
-      </p>
+      <div className="flex items-center gap-1">
+        <p className="font-bold">[{playStyle}]</p>
+        <p className="text-xs mt-0.5">
+          {isAdded
+            ? `${count}개의 클리어 기록 추가됨`
+            : `${count}개의 클리어 기록이 갱신됨`}
+        </p>
+      </div>
     </div>
   );
 }
@@ -73,21 +80,18 @@ export function UpdateHistory({ userId }: UpdateHistoryProps) {
 
   // 최신순 이력을 사용자가 보는 로컬 날짜 기준으로 묶어 Figma의
   // "날짜 (n건) → 갱신 카드" 구조를 만든다.
-  const updatesByDate = useMemo(
-    () => {
-      const entries =
-        updateHistory.data?.pages
-          .flatMap((page) => page.items)
-          .filter((item) => item.added > 0 || item.updated > 0) ?? [];
-      const groups = new Map<string, ScoreUpdateHistoryItem[]>();
-      entries.forEach((item) => {
-        const date = getLocalDate(item.uploaded_at);
-        groups.set(date, [...(groups.get(date) ?? []), item]);
-      });
-      return Array.from(groups.entries()) as UpdatesByDate;
-    },
-    [updateHistory.data?.pages],
-  );
+  const updatesByDate = useMemo(() => {
+    const entries =
+      updateHistory.data?.pages
+        .flatMap((page) => page.items)
+        .filter((item) => item.added > 0 || item.updated > 0) ?? [];
+    const groups = new Map<string, ScoreUpdateHistoryItem[]>();
+    entries.forEach((item) => {
+      const date = getLocalDate(item.uploaded_at);
+      groups.set(date, [...(groups.get(date) ?? []), item]);
+    });
+    return Array.from(groups.entries()) as UpdatesByDate;
+  }, [updateHistory.data?.pages]);
 
   return (
     <section className="flex min-w-0 flex-col gap-3">
@@ -115,7 +119,9 @@ export function UpdateHistory({ userId }: UpdateHistoryProps) {
             {updatesByDate.map(([date, items]) => (
               <div key={date} className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="text-xs whitespace-nowrap">{formatUpdateDate(date)}</span>
+                  <span className="text-xs whitespace-nowrap">
+                    {formatUpdateDate(date)}
+                  </span>
                   <Separator className="flex-1" />
                 </div>
                 {items.flatMap((item) => [
@@ -125,6 +131,7 @@ export function UpdateHistory({ userId }: UpdateHistoryProps) {
                           key={`${item.upload_id}-added`}
                           count={item.added}
                           type="added"
+                          playStyle={item.play_style}
                         />,
                       ]
                     : []),
@@ -134,6 +141,7 @@ export function UpdateHistory({ userId }: UpdateHistoryProps) {
                           key={`${item.upload_id}-updated`}
                           count={item.updated}
                           type="updated"
+                          playStyle={item.play_style}
                         />,
                       ]
                     : []),
@@ -149,7 +157,9 @@ export function UpdateHistory({ userId }: UpdateHistoryProps) {
               disabled={updateHistory.isFetchingNextPage}
               onClick={() => updateHistory.fetchNextPage()}
             >
-              {updateHistory.isFetchingNextPage ? "불러오는 중..." : "더 불러오기"}
+              {updateHistory.isFetchingNextPage
+                ? "불러오는 중..."
+                : "더 불러오기"}
             </Button>
           )}
         </>
