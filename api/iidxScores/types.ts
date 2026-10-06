@@ -152,7 +152,7 @@ export interface ScoreUpdateHistoryParams {
 
 export interface ScoreUpdateHistoryItem extends ScoreChangeCounts {
   upload_id: string;
-  play_style: string;
+  play_style: IidxPlayStyle;
   source: string;
   uploaded_at: string;
 }
@@ -163,4 +163,5 @@ export interface ScoreUpdateHistoryResponse {
   total: number;
   total_pages: number;
   items: ScoreUpdateHistoryItem[];
+  play_style: IidxPlayStyle;
 }
