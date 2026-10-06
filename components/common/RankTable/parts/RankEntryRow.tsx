@@ -38,39 +38,39 @@ export function RankEntryRow({
       } | 마지막 플레이: ${formatPlayedDate(entry.score?.last_played_at)}`;
 
   return (
-    <div
-      className={cn(
-        "relative flex flex-col gap-1 overflow-hidden rounded-lg border bg-card text-foreground",
-        showLamp ? "p-4 pl-7.5!" : "p-4",
-      )}
-    >
-      {showLamp &&
-        (showComparison ? (
-          // 비교 모드 — 위 절반은 본인 램프, 아래 절반은 상대 램프.
-          <div className="absolute top-0 left-0 flex h-full w-4 flex-col border-r">
-            <span
-              className={cn("h-1/2 w-full", getSwatchClassName(entry.score?.clear_lamp))}
-            />
+    <tr role="row" className="flex bg-card">
+      {showLamp && (
+        <td role="cell" className="w-4 shrink-0 border-r p-0">
+          {showComparison ? (
+            // 비교 모드 — 위 절반은 본인 램프, 아래 절반은 상대 램프.
+            <div className="flex h-full min-h-16 w-4 flex-col">
+              <span
+                className={cn("h-1/2 w-full flex-1", getSwatchClassName(entry.score?.clear_lamp))}
+              />
+              <span
+                className={cn(
+                  "h-1/2 w-full flex-1",
+                  getSwatchClassName(entry.opponent_score?.clear_lamp),
+                )}
+              />
+            </div>
+          ) : (
             <span
               className={cn(
-                "h-1/2 w-full",
-                getSwatchClassName(entry.opponent_score?.clear_lamp),
+                "block h-full min-h-16 w-4",
+                getSwatchClassName(entry.score?.clear_lamp),
               )}
             />
-          </div>
-        ) : (
-          <span
-            className={cn(
-              "absolute top-0 left-0 h-full w-4 border-r",
-              getSwatchClassName(entry.score?.clear_lamp),
-            )}
-          />
-        ))}
-      <p className="text-base font-medium">
-        {entry.title}
-        {entry.series ? ` (${entry.series})` : ""} [{entry.difficulty}]
-      </p>
-      <p className="text-sm text-muted-foreground">{scoreLine}</p>
-    </div>
+          )}
+        </td>
+      )}
+      <td role="cell" className="min-w-0 flex-1 px-4 py-3">
+        <p className="text-base font-medium">
+          {entry.title}
+          {entry.series ? ` (${entry.series})` : ""} [{entry.difficulty}]
+        </p>
+        <p className="text-sm text-muted-foreground">{scoreLine}</p>
+      </td>
+    </tr>
   );
 }

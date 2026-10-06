@@ -23,7 +23,7 @@ export const CLEAR_LAMP_META: {
   label: string;
   swatchClassName: string;
 }[] = [
-  { key: "no_play", label: "NO PLAY", swatchClassName: "bg-gray-50" },
+  { key: "no_play", label: "NO PLAY", swatchClassName: "bg-gray-200" },
   { key: "failed", label: "FAILED", swatchClassName: "bg-red-500" },
   {
     key: "assist_clear",
