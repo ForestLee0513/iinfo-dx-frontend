@@ -45,7 +45,10 @@ export function RankEntryRow({
             // 비교 모드 — 위 절반은 본인 램프, 아래 절반은 상대 램프.
             <div className="flex h-full min-h-16 w-4 flex-col">
               <span
-                className={cn("h-1/2 w-full flex-1", getSwatchClassName(entry.score?.clear_lamp))}
+                className={cn(
+                  "h-1/2 w-full flex-1",
+                  getSwatchClassName(entry.score?.clear_lamp),
+                )}
               />
               <span
                 className={cn(
@@ -57,7 +60,7 @@ export function RankEntryRow({
           ) : (
             <span
               className={cn(
-                "block h-full min-h-16 w-4",
+                "block h-full min-h-16 w-4 border-r",
                 getSwatchClassName(entry.score?.clear_lamp),
               )}
             />
