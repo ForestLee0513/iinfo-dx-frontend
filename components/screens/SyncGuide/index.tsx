@@ -11,10 +11,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ServiceTabs } from "@/components/common/ServiceTabs";
 import { UploadTokenField } from "./parts/UploadTokenField";
 
-const BOOKMARKLET_SCRIPT = `javascript:(function(d){var s=d.createElement("script");s.src="https://example-owner.github.io/iinfo-dx-crawler/iidx-crawler.js?v="+Math.floor(Date.now()/1e5);d.body.append(s)})(document);`;
+const crawlerScriptUrl = process.env.NEXT_PUBLIC_CRAWLER_SCRIPT_URL?.trim();
+const BOOKMARKLET_SCRIPT = crawlerScriptUrl
+  ? `javascript:(function(d){var s=d.createElement("script");s.src=${JSON.stringify(crawlerScriptUrl)}+"?v="+Math.floor(Date.now()/1e5);d.body.append(s)})(document);`
+  : null;
 
 export function SyncGuide() {
   const handleCopy = () => {
+    if (!BOOKMARKLET_SCRIPT) return;
     navigator.clipboard.writeText(BOOKMARKLET_SCRIPT);
     toast.success("클립보드에 복사되었습니다.");
   };
@@ -58,15 +62,23 @@ export function SyncGuide() {
                 복사 버튼을 눌러 바로 복사할 수도 있습니다.
               </li>
             </ol>
+            {!BOOKMARKLET_SCRIPT && (
+              <Alert>
+                <AlertDescription>
+                  갱신 스크립트가 설정되지 않았습니다. 관리자에게 문의해 주세요.
+                </AlertDescription>
+              </Alert>
+            )}
             <Card>
               <CardContent className="flex items-start gap-3 p-4">
                 <code className="min-w-0 flex-1 break-all font-mono text-sm text-muted-foreground">
-                  {BOOKMARKLET_SCRIPT}
+                  {BOOKMARKLET_SCRIPT ?? "스크립트를 사용할 수 없습니다."}
                 </code>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={handleCopy}
+                  disabled={!BOOKMARKLET_SCRIPT}
                   aria-label="스크립트 복사"
                   className="shrink-0"
                 >

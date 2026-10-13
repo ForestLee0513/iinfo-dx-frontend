@@ -17,7 +17,7 @@ bun dev
 Then open the app depending on how you connect:
 
 - **Direct access (recommended for development)** — [http://localhost:3000](http://localhost:3000). No proxy, no `basePath`, HMR works natively. Leave the env vars below **unset**.
-- **Through code-server** — `https://code.example.com/absproxy/3000`. Requires the env vars below. The auto-generated `/proxy/3000/` link redirects here automatically.
+- **Through code-server** — `https://<your-code-server-host>/absproxy/3000`. Requires the env vars below. The auto-generated `/proxy/3000/` link redirects here automatically.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
@@ -32,11 +32,12 @@ Next.js references assets with root-absolute paths (`/_next/...`), so behind the
 
 ## Environment Variables
 
-Create a `.env.local` in the project root (usually git-ignored, since these values are environment-specific).
+For production, copy `.env.example` to `.env.local` and set your own public endpoints. `.env.local` is git-ignored. For local development, you can leave these variables unset to use the local API default. Configure both public URLs in the build environment before running a production build; Next.js embeds `NEXT_PUBLIC_*` values in the browser bundle.
 
 | Variable | Example | Description |
 | --- | --- | --- |
-| `NEXT_PUBLIC_API_URL` | `https://api.example.com` | Backend base URL. When unset, production uses the public API and development uses `http://localhost:8000`. |
+| `NEXT_PUBLIC_API_URL` | `https://api.example.com` | Backend base URL. Required for production builds; development defaults to `http://localhost:8000`. |
+| `NEXT_PUBLIC_CRAWLER_SCRIPT_URL` | `https://example.com/iidx-crawler.js` | Public IIDX crawler script URL. When unset, the bookmarklet copy action is disabled. |
 | `NEXT_PUBLIC_BASE_PATH` | `/absproxy/3000` | Proxy path prefix. **When set**, enables `basePath`/`assetPrefix` and the entry redirect. Unset / empty / `"/"` → runs at root (default for production). |
 | `NEXT_PUBLIC_BASE_DEV_URL` | `code.example.com` | The **hostname** used to reach the dev server. Added to `allowedDevOrigins` so cross-origin dev requests (HMR WebSocket, etc.) are accepted. |
 

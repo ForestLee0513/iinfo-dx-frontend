@@ -4,13 +4,13 @@ import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { AUTH_BASE } from "@/api/auth/constants";
 import type { AuthRefreshResponse } from "@/api/auth/types";
 
-const DEFAULT_API_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://api.example.com"
-    : "http://localhost:8000";
+const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_BASE_URL;
+if (process.env.NODE_ENV === "production" && !configuredApiUrl) {
+  throw new Error("NEXT_PUBLIC_API_URL must be set for production builds");
+}
+
+export const API_BASE_URL = configuredApiUrl || "http://localhost:8000";
 
 const REFRESH_URL = `${AUTH_BASE}/refresh`;
 const LOGIN_URL_PREFIX = `${AUTH_BASE}/login`;

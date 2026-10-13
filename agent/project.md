@@ -18,9 +18,10 @@ There is no test setup in this project.
 
 ## Environment
 
-`.env.local` (git-ignored) controls two things:
+`.env.local` (git-ignored) controls the public endpoints and optional reverse proxy settings:
 
-- `NEXT_PUBLIC_API_URL` — backend base URL (defaults to `http://localhost:8000` in `lib/axios.ts`). Backend routes live under `/api/v1/web/...`.
+- `NEXT_PUBLIC_API_URL` — backend base URL (required for production builds; defaults to `http://localhost:8000` during development). Backend routes live under `/api/v1/web/...`.
+- `NEXT_PUBLIC_CRAWLER_SCRIPT_URL` — public URL of the IIDX crawler script. When unset, the bookmarklet copy action is disabled.
 - `NEXT_PUBLIC_BASE_PATH` / `NEXT_PUBLIC_BASE_DEV_URL` — only for running behind a code-server reverse proxy (`/absproxy/<port>`). When set, `next.config.ts` enables `basePath`/`assetPrefix`, `allowedDevOrigins`, and a root redirect. Leave **unset** for normal local/production use. `NEXT_PUBLIC_*` vars are inlined at build time — restart the dev server after changing them. See README.md for the full proxy explanation.
 
 Because `basePath` may be active, image paths must use **static imports** (`import logo from "../public/logo.png"`) rather than string paths — `basePath` is not applied to `next/image` string `src`, raw `<img>`, or CSS `url()`.
