@@ -15,6 +15,23 @@ export interface UploadTokenResponse {
 export type IidxPlayStyle =
   (typeof IIDX_PLAY_STYLE)[keyof typeof IIDX_PLAY_STYLE];
 
+export interface ScoreImportPayload {
+  csv: { SP?: string; DP?: string };
+  profile?: unknown;
+  source?: string;
+}
+
+export interface ScoreImportResult {
+  upload_id: string;
+  play_style: IidxPlayStyle;
+  song_count: number;
+  changed: boolean;
+}
+
+export interface ScoreImportResponse {
+  results: ScoreImportResult[];
+}
+
 /*
 GET /api/v1/iidx/scores/snapshots
 성적 스냅샷 목록 - List Snapshots

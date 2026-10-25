@@ -3,6 +3,7 @@ import {
   IIDX_SCORES_SNAPSHOTS_URL,
   IIDX_SCORES_SUMMARY_URL,
   IIDX_SCORES_TOKEN_URL,
+  IIDX_SCORES_UPLOAD_URL,
   IIDX_SCORES_UPDATE_CALENDAR_URL,
   IIDX_SCORES_UPDATE_HISTORY_URL,
   IIDX_SCORES_UPLOAD_CALENDAR_URL,
@@ -21,7 +22,17 @@ import type {
   UploadCalendarParams,
   UploadCalendarResponse,
   UploadTokenResponse,
+  ScoreImportPayload,
+  ScoreImportResponse,
 } from "./types";
+
+export async function uploadImportedScores(payload: ScoreImportPayload) {
+  const { data } = await api.post<ScoreImportResponse>(
+    IIDX_SCORES_UPLOAD_URL,
+    payload,
+  );
+  return data;
+}
 
 /*
 POST /api/v1/iidx/scores/token

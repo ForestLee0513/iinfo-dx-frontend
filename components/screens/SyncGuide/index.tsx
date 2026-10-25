@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { ServiceTabs } from "@/components/common/ServiceTabs";
-import { UploadTokenField } from "./parts/UploadTokenField";
 
 const crawlerScriptUrl = process.env.NEXT_PUBLIC_CRAWLER_SCRIPT_URL?.trim();
 const BOOKMARKLET_SCRIPT = crawlerScriptUrl
@@ -53,8 +52,6 @@ export function SyncGuide() {
             </AlertDescription>
           </Alert>
 
-          <UploadTokenField idPrefix="iidx" />
-
           <div className="flex flex-col gap-2">
             <ol className="list-decimal text-sm text-foreground">
               <li className="ms-5">
@@ -96,7 +93,8 @@ export function SyncGuide() {
               e-Amusement에 로그인한 뒤 저장한 북마크를 실행하세요.
             </li>
             <li className="ms-5">
-              실행된 스크립트의 안내에 따라 갱신을 완료하세요.
+              실행된 스크립트의 안내에 따라 갱신하세요. 수집이 끝나면
+              IInfoDX로 이동해 로그인 상태에서 업로드합니다.
             </li>
           </ol>
         </div>

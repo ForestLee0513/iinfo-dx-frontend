@@ -2,6 +2,7 @@ import type { ClearLampCounts } from "./types";
 
 export const IIDX_SCORES_BASE = "/api/v1/iidx/scores";
 export const IIDX_SCORES_TOKEN_URL = `${IIDX_SCORES_BASE}/token`;
+export const IIDX_SCORES_UPLOAD_URL = `${IIDX_SCORES_BASE}/upload`;
 export const IIDX_SCORES_SNAPSHOTS_URL = `${IIDX_SCORES_BASE}/snapshots`;
 export const IIDX_SCORES_SUMMARY_URL = `${IIDX_SCORES_BASE}/summary`;
 export const IIDX_SCORES_UPLOAD_CALENDAR_URL = `${IIDX_SCORES_BASE}/upload-calendar`;
